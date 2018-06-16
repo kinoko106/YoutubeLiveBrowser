@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="YoutubeLiveBrowser.Resources.Component.WebBrowserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YoutubeLiveBrowser.Resources.Component"
+             xmlns:vm="clr-namespace:YoutubeLiveBrowser.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance {x:Type vm:WebBrowserControlViewModel},IsDesignTimeCreatable=True}"
+             d:DesignHeight="{Binding Height,Mode=TwoWay}"
+             d:DesignWidth="{Binding Width}">
+    <StackPanel Height="480" Width="{Binding Width}">
+        <WebBrowser Height="480" x:Name="browser" Source="https://www.youtube.com/watch?v=YmYcyJLSaEY;ab_channel=%E6%A8%8B%E5%8F%A3%E6%A5%93%E3%80%90%E3%81%AB%E3%81%98%E3%81%95%E3%82%93%E3%81%98%E6%89%80%E5%B1%9E%E3%80%91"/>
+    </StackPanel>
+</UserControl>
