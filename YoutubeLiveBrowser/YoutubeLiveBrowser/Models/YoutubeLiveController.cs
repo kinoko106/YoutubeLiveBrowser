@@ -13,29 +13,6 @@ using System.Windows.Data;
 
 namespace YoutubeLiveBrowser.Models
 {
-	public class YoutubeLive
-	{
-		public static string APIPath = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code";
-		public static string ClientId = "681645994603-504ct38mbada3ltl3n8oe7g9bja6chnc.apps.googleusercontent.com";
-		public static string ClientSecert = "iEk0qX2un9EKnee4y6DvXmlz";
-		public static string RequestUrl = "http://localhost:8080";
-		public static string TokenUrl = "https://www.googleapis.com/oauth2/v4/token";
-		public static string APIKey = "AIzaSyAigMDKsNYQp6jkFEfb9KADSRuzum-61BI";
-
-		public static string AuthUrl
-		{
-			get
-			{
-				string path = APIPath
-							+ "&client_id=" + ClientId
-							+ "&redirect_uri=" + RequestUrl
-							+ "&scope=" + "https://www.googleapis.com/auth/youtube.readonly"
-							+ "&access_type=" + "offline";
-				return path;
-			}
-		}
-	}
-
 	class YoutubeLiveController
 	{
 		public string ChannelId { get; set; }
@@ -50,6 +27,7 @@ namespace YoutubeLiveBrowser.Models
 		/// </summary>
 		public YoutubeLiveController()
 		{
+			//使ってない
 			string path = YoutubeLive.AuthUrl;
 
 			var content = new Dictionary<string, string>() {
