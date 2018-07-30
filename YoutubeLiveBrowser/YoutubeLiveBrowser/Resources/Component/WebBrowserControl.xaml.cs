@@ -25,11 +25,11 @@ namespace YoutubeLiveBrowser.Resources.Component
 		{
 			this.InitializeComponent();
 
-			var axIWebBrowser2 = typeof(WebBrowser).GetProperty("AxIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
-			var comObj = axIWebBrowser2.GetValue(browser, null);
+			//var axIWebBrowser2 = typeof(WebBrowser).GetProperty("AxIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+			//var comObj = axIWebBrowser2.GetValue(browser, null);
 
-			// JavaScriptのエラー表示を抑止する
-			comObj.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, comObj, new object[] { true });
+			//// JavaScriptのエラー表示を抑止する
+			//comObj.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, comObj, new object[] { true });
 		}
 	}
 }

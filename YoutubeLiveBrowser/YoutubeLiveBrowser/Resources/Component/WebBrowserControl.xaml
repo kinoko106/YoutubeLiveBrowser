@@ -10,6 +10,25 @@
              d:DesignHeight="{Binding Height,Mode=TwoWay}"
              d:DesignWidth="{Binding Width}">
     <StackPanel Height="480" Width="{Binding Width}">
-        <WebBrowser Height="480" x:Name="browser" Source="https://www.youtube.com/watch?v=YmYcyJLSaEY;ab_channel=%E6%A8%8B%E5%8F%A3%E6%A5%93%E3%80%90%E3%81%AB%E3%81%98%E3%81%95%E3%82%93%E3%81%98%E6%89%80%E5%B1%9E%E3%80%91"/>
+        <!--<WebBrowser Height="480" x:Name="browser" Source="https://www.youtube.com/watch?v=YmYcyJLSaEY;ab_channel=%E6%A8%8B%E5%8F%A3%E6%A5%93%E3%80%90%E3%81%AB%E3%81%98%E3%81%95%E3%82%93%E3%81%98%E6%89%80%E5%B1%9E%E3%80%91"/>-->
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="ChannelId:"></TextBlock>
+            <TextBox x:Name="channelIdInput" Text="{Binding ChannelId,Mode=TwoWay}" Width="200"></TextBox>
+            <Button Content="Submit" Width="80" Command="{Binding SubmitChannelId}"></Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="VidelId:"></TextBlock>
+            <TextBlock Text="{Binding VideoId,Mode=TwoWay}" Width="200"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="LiveChatId:"></TextBlock>
+            <TextBlock Text="{Binding LiveChatId,Mode=TwoWay}" Width="200"></TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="GetComment Start" Width="120" Command="{Binding GetComment}"></Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <ListBox ItemsSource="{Binding Comments,Mode=TwoWay}" Height="300"  Width="200"></ListBox>
+        </StackPanel>
     </StackPanel>
 </UserControl>

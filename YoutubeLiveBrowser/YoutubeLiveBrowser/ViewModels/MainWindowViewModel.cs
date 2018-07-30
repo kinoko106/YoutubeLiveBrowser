@@ -11,8 +11,6 @@ namespace YoutubeLiveBrowser.ViewModels
 {
 	class MainWindowViewModel : ControlViewModelBase
 	{
-		public WebBrowserControlViewModel WebBrowser;
-
 		public MainWindowViewModel()
 		{
 			WebBrowser = new WebBrowserControlViewModel("https://www.youtube.com/watch?v=quuZ06TLy-E&ab_channel=%E6%9C%88%E3%83%8E%E7%BE%8E%E5%85%8E");
@@ -20,6 +18,23 @@ namespace YoutubeLiveBrowser.ViewModels
 			Height = 600;
 			Width = 900;
 		}
+
+		#region WebBrowser
+		public WebBrowserControlViewModel _WebBrowser;
+
+		public WebBrowserControlViewModel WebBrowser
+		{
+			get
+			{ return _WebBrowser; }
+			set
+			{
+				if (_WebBrowser == value)
+					return;
+				_WebBrowser = value;
+				RaisePropertyChanged(nameof(WebBrowser));
+			}
+		}
+		#endregion
 
 		//#region WindowWidth
 		//private int _WindowWidth;

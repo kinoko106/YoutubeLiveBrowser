@@ -16,8 +16,8 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <Grid>
-        <component:WebBrowserControl DataContext="{Binding WebBrowser}" Margin="0,-230,0,0"/>
-        <StackPanel Height="200" Background="Black" Margin="0,400,0,0"></StackPanel>
+        <component:WebBrowserControl DataContext="{Binding WebBrowser}" Margin="0,0,0,0"/>
+        <StackPanel Height="200" Margin="0,400,0,0"></StackPanel>
         <!--<WebBrowser Source="https://www.youtube.com/watch?v=quuZ06TLy-E;ab_channel=%E6%9C%88%E3%83%8E%E7%BE%8E%E5%85%8E"/>-->
         <!--<WebBrowser Source="C:\Users\daichiti\Source\Repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\Resources\test.html"/>-->
     </Grid>
