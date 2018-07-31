@@ -246,8 +246,14 @@ namespace YoutubeLiveBrowser.Models
 			var messagesIdsOld = new List<string>();
 			var messagesIdsDiff = new List<string>();
 
+			var messageItems = new List<YoutubeLiveChatMessageItem>();
+			var pageInfo = new PageInfo((int)messagesObject.pageInfo.totalResults, (int)messagesObject.pageInfo.resultsPerPage);
+			var responseItem = new YoutubeLiveChatMessageResponseItem(messagesObject.kind, messagesObject.etag, messagesObject.nextPageToken, messagesObject.pollingIntervalMillis,pageInfo, messageItems);
+
 			foreach (var value in messagesObject.items)
 			{
+				//var snippet = new YoutubeLiveChatMessageItem(value.kind,value.etag)
+
 				MessageIds.Add(value.id);
 
 				Messages.Add(value.id, new object[]

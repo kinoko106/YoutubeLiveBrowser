@@ -26,16 +26,15 @@ namespace YoutubeLiveBrowser.ViewModels
 
 		public WebBrowserControlViewModel(string inSourceURL)
 		{
-			
-
 			Height = 1080;
 			Width = 1900;
 
 			SourceURL = inSourceURL;
 			//ChannelId = "UCD-miitqNY3nyukJ4Fnf4_A";//いいんちょ
-			ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
+			//ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
 			//ChannelId = "UCv1fFr156jc65EMiLbaLImw";//rikiya
 			//ChannelId = "UCsg-YqdqQ-KFF0LNk23BY4A";//でろ
+			ChannelId = "UC48jH1ul-6HOrcSSfoR02fQ";//リリ
 			Comment = "test";
 			Comments = new ObservableSynchronizedCollection<string>();
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());

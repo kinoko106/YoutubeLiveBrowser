@@ -92,22 +92,26 @@ namespace YoutubeLiveBrowser.Models
 	/// </summary>
 	public class YoutubeLiveChatMessageItem : IYoutubeApiResponse
 	{
-		public string Kind { get; set; }
-		public string Etag { get; set; }
-		public string Id { get; set; } //コメントのID
-		public Snippet Snippet { get; set; }
-		public AuthorDetails AuthorDetails { get; set; }
-
 		#region コンストラクタ
-		public YoutubeLiveChatMessageItem(string id, 
+		public YoutubeLiveChatMessageItem(string kind, 
+			string etag, 
+			string id, 
 			Snippet snippet, 
 			AuthorDetails authorDetails)
 		{
+			Kind = kind;
+			Etag = etag;
 			Id = id;
 			Snippet = snippet;
 			AuthorDetails = authorDetails;
 		}
 		#endregion
+
+		public string Kind { get; set; }
+		public string Etag { get; set; }
+		public string Id { get; set; } //コメントのID
+		public Snippet Snippet { get; set; }
+		public AuthorDetails AuthorDetails { get; set; }
 	}
 	#endregion
 
@@ -135,6 +139,11 @@ namespace YoutubeLiveBrowser.Models
 	public class YoutubeLiveChatMessageResponseItem : IYoutubeApiResponse
 	{
 		#region コンストラクタ
+		public YoutubeLiveChatMessageResponseItem(dynamic response)
+		{
+			PageInfo = new PageInfo((int)response.pageInfo.totalResults, (int)response.pageInfo.resultsPerPage);
+		}
+
 		public YoutubeLiveChatMessageResponseItem(string kind, 
 			string etag, string nextPageToken, 
 			int pollingIntervalMillis, 
@@ -157,6 +166,11 @@ namespace YoutubeLiveBrowser.Models
 		public PageInfo PageInfo { get; set; }
 
 		public List<YoutubeLiveChatMessageItem> ChatMessages { get; set; }
+
+		public void AddChatMessageItem(string message)
+		{
+
+		}
 	}
 	#endregion
 
