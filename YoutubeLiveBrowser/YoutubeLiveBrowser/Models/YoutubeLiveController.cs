@@ -28,19 +28,19 @@ namespace YoutubeLiveBrowser.Models
 		public YoutubeLiveController()
 		{
 			//使ってない
-			string path = YoutubeLive.AuthUrl;
+			//string path = YoutubeLive.AuthUrl;
 
-			var content = new Dictionary<string, string>() {
-			  { "code", "" },
-			  { "client_id", YoutubeLive.ClientId },
-			  { "client_secret", YoutubeLive.ClientSecert },
-			  { "redirect_uri",  "http://localhost:8080" },
-			  { "grant_type", "authorization_code" },
-			  { "access_type", "offline" },
-			};
+			//var content = new Dictionary<string, string>() {
+			//  { "code", "" },
+			//  { "client_id", YoutubeLive.ClientId },
+			//  { "client_secret", YoutubeLive.ClientSecert },
+			//  { "redirect_uri",  "http://localhost:8080" },
+			//  { "grant_type", "authorization_code" },
+			//  { "access_type", "offline" },
+			//};
 
-			WebRequest request = WebRequest.Create(YoutubeLive.TokenUrl);
-			request.Method = "POST";
+			//WebRequest request = WebRequest.Create(YoutubeLive.TokenUrl);
+			//request.Method = "POST";
 			//request.ContentLength;
 		}
 
@@ -174,7 +174,13 @@ namespace YoutubeLiveBrowser.Models
 			}
 			return LiveChatId;
 		}
+		#endregion
 
+		#region GetChatIdAsync
+		/// <summary>
+		/// チャットIDを取得(非同期版)
+		/// </summary>
+		/// <returns></returns>
 		public async Task<string> GetChatIdAsync()
 		{
 			await Task.Run(() =>

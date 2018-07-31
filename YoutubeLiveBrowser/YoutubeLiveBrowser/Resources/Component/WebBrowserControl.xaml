@@ -18,11 +18,11 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="VidelId:"></TextBlock>
-            <TextBlock Text="{Binding VideoId,Mode=TwoWay}" Width="200"></TextBlock>
+            <TextBox Text="{Binding VideoId,Mode=TwoWay}" Width="200"></TextBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="LiveChatId:"></TextBlock>
-            <TextBlock Text="{Binding LiveChatId,Mode=TwoWay}" Width="200"></TextBlock>
+            <TextBox Text="{Binding LiveChatId,Mode=TwoWay}" Width="200"></TextBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Button Content="GetComment Start" Width="120" Command="{Binding GetComment}"></Button>
