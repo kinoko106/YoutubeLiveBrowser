@@ -34,7 +34,8 @@ namespace YoutubeLiveBrowser.ViewModels
 			//ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
 			//ChannelId = "UCv1fFr156jc65EMiLbaLImw";//rikiya
 			//ChannelId = "UCsg-YqdqQ-KFF0LNk23BY4A";//でろ
-			ChannelId = "UC48jH1ul-6HOrcSSfoR02fQ";//リリ
+			//ChannelId = "UC48jH1ul-6HOrcSSfoR02fQ";//リリ
+			ChannelId = "UCvmppcdYf4HOv-tFQhHHJMA";//もいもい
 			Comment = "test";
 			Comments = new ObservableSynchronizedCollection<string>();
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());

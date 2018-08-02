@@ -11,12 +11,23 @@ namespace YoutubeLiveBrowser.Models
 		string Kind { get; set; } //レスポンスの種類
 		string Etag { get; set; } //etag 謎
 	}
-	//apiから取れる情報はすべて取っておく
 
+	//apiで取ってきた生の情報
+
+	#region TextMessageDetails
+	/// <summary>
+	/// コメントの詳細
+	/// </summary>
 	public class TextMessageDetails
 	{
+		public TextMessageDetails(string messageText)
+		{
+			MessageText = messageText;
+		}
+
 		public string MessageText { get; set; }
 	}
+	#endregion
 
 	#region Snippet
 	/// <summary>
@@ -25,6 +36,16 @@ namespace YoutubeLiveBrowser.Models
 	public class Snippet
 	{
 		#region コンストラクタ
+		public Snippet(dynamic inSnippet)
+		{
+			Type = (string)inSnippet.type;
+			LiveChatId = (string)inSnippet.liveChatId;
+			AuthorChannelId = (string)inSnippet.authorChannelId;
+			PublishedAt = DateTime.Parse(inSnippet.publishedAt);
+			HasDisplayContent = inSnippet.hasDisplayContent;
+			DisplayMessage = (string)inSnippet.displayMessage;
+			TextMessageDetails = new TextMessageDetails(inSnippet.textMessageDetails.messageText);
+		}
 		public Snippet(string type, 
 			string liveChatId, 
 			string authorChannelId, 
@@ -53,12 +74,23 @@ namespace YoutubeLiveBrowser.Models
 	}
 	#endregion
 
+	#region AuthorDetails
 	/// <summary>
-	/// 
+	/// AuthorDetails
 	/// </summary>
 	public class AuthorDetails
 	{
 		#region コンストラクタ
+		public AuthorDetails(dynamic inAuthorDetails)
+		{
+			ChannelId = (string)inAuthorDetails.channelId;
+			DisplayName = (string)inAuthorDetails.displayName;
+			ProfileImageUrl = (string)inAuthorDetails.profileImageUrl;
+			IsVerified = inAuthorDetails.isVerified;
+			IsChatOwner = inAuthorDetails.isChatOwner;
+			IsChatSponsor = inAuthorDetails.isChatSponsor;
+			IsChatModerator = inAuthorDetails.isChatModerator;
+		}
 		public AuthorDetails(string channelId, 
 			string displayName, 
 			string profileImageUrl, 
@@ -85,6 +117,7 @@ namespace YoutubeLiveBrowser.Models
 		public bool IsChatSponsor { get; set; }//スポンサーか
 		public bool IsChatModerator { get; set; }//モデレータか(スパナ付きか)
 	}
+	#endregion
 
 	#region YoutubeLiveChatMessageItem
 	/// <summary>
@@ -93,10 +126,18 @@ namespace YoutubeLiveBrowser.Models
 	public class YoutubeLiveChatMessageItem : IYoutubeApiResponse
 	{
 		#region コンストラクタ
-		public YoutubeLiveChatMessageItem(string kind, 
-			string etag, 
-			string id, 
-			Snippet snippet, 
+		public YoutubeLiveChatMessageItem(dynamic inYoutubeLiveChatMessageItem)
+		{
+			Kind = inYoutubeLiveChatMessageItem.kind;
+			Etag = inYoutubeLiveChatMessageItem.etag;
+			Id = inYoutubeLiveChatMessageItem.id;
+			Snippet = new Snippet(inYoutubeLiveChatMessageItem.snippet);
+			AuthorDetails = new AuthorDetails(inYoutubeLiveChatMessageItem.authorDetails);
+		}
+		public YoutubeLiveChatMessageItem(string kind,
+			string etag,
+			string id,
+			Snippet snippet,
 			AuthorDetails authorDetails)
 		{
 			Kind = kind;
@@ -112,6 +153,13 @@ namespace YoutubeLiveBrowser.Models
 		public string Id { get; set; } //コメントのID
 		public Snippet Snippet { get; set; }
 		public AuthorDetails AuthorDetails { get; set; }
+
+		//参照用プロパティ
+		public DateTime PublishedAt { get { return Snippet.PublishedAt; } }				//コメントされた時間
+		public string DisplayMessage { get { return Snippet.DisplayMessage; } }			//コメント
+		public bool IsChatOwner { get { return AuthorDetails.IsChatOwner; } }			//配信者コメントか
+		public bool IsChatSponsor { get { return AuthorDetails.IsChatSponsor; } }		//スポンサーか
+		public bool IsChatModerator { get { return AuthorDetails.IsChatModerator; } }	//モデレータか(スパナ付きか)
 	}
 	#endregion
 
@@ -121,6 +169,12 @@ namespace YoutubeLiveBrowser.Models
 	/// </summary>
 	public class PageInfo
 	{
+		public PageInfo(dynamic inPageInfo)
+		{
+			TotalResults = (int)inPageInfo.totalResults;
+			ResultsPerPage = (int)inPageInfo.resultsPerPage;
+		}
+
 		public PageInfo(int totalResults, int resultsPerPage)
 		{
 			TotalResults = totalResults;
@@ -139,16 +193,27 @@ namespace YoutubeLiveBrowser.Models
 	public class YoutubeLiveChatMessageResponseItem : IYoutubeApiResponse
 	{
 		#region コンストラクタ
+		//リクエストで受け取ったものをそのままぶち込むとき
 		public YoutubeLiveChatMessageResponseItem(dynamic response)
 		{
-			PageInfo = new PageInfo((int)response.pageInfo.totalResults, (int)response.pageInfo.resultsPerPage);
+			Kind = (string)response.kind;
+			Etag = (string)response.etag;
+			NextPageToken = (string)response.nextPageToken;
+			PollingIntervalMillis = (int)response.pollingIntervalMillis;
+			PageInfo = new PageInfo(response.pageInfo);
+
+			ChatMessages = new Dictionary<string, YoutubeLiveChatMessageItem>();
+			foreach (dynamic value in response.items)
+			{
+				ChatMessages.Add(value.id ,new YoutubeLiveChatMessageItem(value));
+			}
 		}
 
 		public YoutubeLiveChatMessageResponseItem(string kind, 
 			string etag, string nextPageToken, 
 			int pollingIntervalMillis, 
-			PageInfo pageInfo, 
-			List<YoutubeLiveChatMessageItem> chatMessages)
+			PageInfo pageInfo,
+			Dictionary<string, YoutubeLiveChatMessageItem> chatMessages)
 		{
 			Kind = kind;
 			Etag = etag;
@@ -165,26 +230,12 @@ namespace YoutubeLiveBrowser.Models
 		public int PollingIntervalMillis { get; set; }//競合回避用のインターバル?(ms)
 		public PageInfo PageInfo { get; set; }
 
-		public List<YoutubeLiveChatMessageItem> ChatMessages { get; set; }
+		public Dictionary<string, YoutubeLiveChatMessageItem> ChatMessages { get; set; }//1回のリクエストでとれたコメント
 
 		public void AddChatMessageItem(string message)
 		{
 
 		}
-	}
-	#endregion
-
-	#region YoutubeLiveStreamInfo あとで定義なおす
-	/// <summary>
-	/// 配信の情報
-	/// </summary>
-	public class YoutubeLiveStreamInfo
-	{
-		public string ChannelId { get; set; }   //チャンネルID
-		public string VideoId { get; set; }     //動画ID
-		public string LiveChatId { get; set; }  //配信中のチャットID
-
-		//public List<YoutubeLiveCommentDetail> ChatComments { get; set; }    //配信中のコメント
 	}
 	#endregion
 }

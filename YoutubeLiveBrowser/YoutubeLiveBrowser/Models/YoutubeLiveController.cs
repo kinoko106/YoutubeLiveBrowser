@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
+using YoutubeLiveBrowser.Entity;
+
 namespace YoutubeLiveBrowser.Models
 {
 	class YoutubeLiveController
@@ -226,52 +228,59 @@ namespace YoutubeLiveBrowser.Models
 
 			dynamic messagesObject = null;
 
-			try
+			var commentDiff = new Dictionary<string,YoutubeLiveComment>();
+
+			while (true)
 			{
-				using (var messagesResponse = messagesRequest.GetResponse())
+				try
 				{
-					using (var messagesStream = new StreamReader(messagesResponse.GetResponseStream()))
+					using (var messagesResponse = messagesRequest.GetResponse())
 					{
-						messagesObject = DynamicJson.Parse(messagesStream.ReadToEnd());
+						using (var messagesStream = new StreamReader(messagesResponse.GetResponseStream()))
+						{
+							messagesObject = DynamicJson.Parse(messagesStream.ReadToEnd());
+						}
 					}
 				}
-			}
-			catch
-			{
-				//Console.Error.WriteLine("Error: コメントの取得に失敗しました");
-			}
-
-			var MessageIds = new List<string>();
-			var Messages = new Dictionary<string, object[]>();
-			var messagesIdsOld = new List<string>();
-			var messagesIdsDiff = new List<string>();
-
-			var messageItems = new List<YoutubeLiveChatMessageItem>();
-			var pageInfo = new PageInfo((int)messagesObject.pageInfo.totalResults, (int)messagesObject.pageInfo.resultsPerPage);
-			var responseItem = new YoutubeLiveChatMessageResponseItem(messagesObject.kind, messagesObject.etag, messagesObject.nextPageToken, messagesObject.pollingIntervalMillis,pageInfo, messageItems);
-
-			foreach (var value in messagesObject.items)
-			{
-				//var snippet = new YoutubeLiveChatMessageItem(value.kind,value.etag)
-
-				MessageIds.Add(value.id);
-
-				Messages.Add(value.id, new object[]
+				catch
 				{
+					//Console.Error.WriteLine("Error: コメントの取得に失敗しました");
+				}
+
+				var MessageIds = new List<string>();
+				var Messages = new Dictionary<string, object[]>();
+				var messagesIdsOld = new List<string>();
+				var messagesIdsDiff = new List<string>();
+
+				foreach (var value in messagesObject.items)
+				{
+					MessageIds.Add(value.id);
+
+					Messages.Add(value.id, new object[]
+					{
 						value.authorDetails.displayName,
 						value.snippet.textMessageDetails.messageText,
 						value.authorDetails.isChatOwner
-				});
-			}
+					});
+				}
 
-			messagesIdsDiff = new List<string>(MessageIds);
-			messagesIdsDiff.RemoveAll(messagesIdsOld.Contains);
+				messagesIdsDiff = new List<string>(MessageIds);
+				messagesIdsDiff.RemoveAll(messagesIdsOld.Contains);
 
-			foreach (var value in messagesIdsDiff)
-			{
-				var displayName = Messages[value][0];
-				var messageText = Messages[value][1];
-				var isChatOwner = Messages[value][2];
+				var comments = new Dictionary<string, YoutubeLiveComment>();
+				var response = new YoutubeLiveChatMessageResponseItem(messagesObject);
+				foreach (var comment in response.ChatMessages)
+				{
+					string id = comment.Key;
+					var item = comment.Value;
+					DateTime publishedAt = item.PublishedAt;
+					string c = item.DisplayMessage;
+					bool isOwner = item.IsChatOwner;
+					bool isModerator = item.IsChatModerator;
+					bool isChatSponsor = item.IsChatSponsor;
+
+					comments.Add(id, new YoutubeLiveComment(id, publishedAt,c,isOwner,isModerator,isChatSponsor));
+				}
 			}
 		}
 
