@@ -14,7 +14,7 @@ namespace YoutubeLiveBrowser.Models
 		public static string ClientSecert = "iEk0qX2un9EKnee4y6DvXmlz";//自分で生成したやつ
 		public static string RequestUrl = "http://localhost:8080";
 		public static string TokenUrl = "https://www.googleapis.com/oauth2/v4/token";
-		public static string APIKey = "AIzaSyAigMDKsNYQp6jkFEfb9KADSRuzum-61BI";//自分で生成したやつ
+		public static string APIKey = "";//自分で生成したやつ
 
 		//public static string AuthUrl
 		//{

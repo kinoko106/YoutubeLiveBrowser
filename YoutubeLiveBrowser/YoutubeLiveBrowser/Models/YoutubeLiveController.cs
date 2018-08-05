@@ -21,7 +21,9 @@ namespace YoutubeLiveBrowser.Models
 		public string VideoId { get; set; }
 		public string LiveChatId { get; set; }
 
-		public ObservableSynchronizedCollection<string> Comments { get; set; }
+		public Dictionary<string, YoutubeLiveComment> LiveComments;
+
+		public ObservableSynchronizedCollection<string> DisplayComments { get; set; }
 
 		#region コンストラクタ
 		/// <summary>
@@ -29,21 +31,7 @@ namespace YoutubeLiveBrowser.Models
 		/// </summary>
 		public YoutubeLiveController()
 		{
-			//使ってない
-			//string path = YoutubeLive.AuthUrl;
 
-			//var content = new Dictionary<string, string>() {
-			//  { "code", "" },
-			//  { "client_id", YoutubeLive.ClientId },
-			//  { "client_secret", YoutubeLive.ClientSecert },
-			//  { "redirect_uri",  "http://localhost:8080" },
-			//  { "grant_type", "authorization_code" },
-			//  { "access_type", "offline" },
-			//};
-
-			//WebRequest request = WebRequest.Create(YoutubeLive.TokenUrl);
-			//request.Method = "POST";
-			//request.ContentLength;
 		}
 
 		/// <summary>
@@ -53,8 +41,9 @@ namespace YoutubeLiveBrowser.Models
 		public YoutubeLiveController(string inChannelId)
 		{
 			ChannelId = inChannelId;
-			Comments = new ObservableSynchronizedCollection<string>();
-			BindingOperations.EnableCollectionSynchronization(Comments, new object());
+			DisplayComments = new ObservableSynchronizedCollection<string>();
+			LiveComments = new Dictionary<string, YoutubeLiveComment>();
+			BindingOperations.EnableCollectionSynchronization(DisplayComments, new object());
 		}
 		#endregion
 
@@ -279,20 +268,26 @@ namespace YoutubeLiveBrowser.Models
 					bool isModerator = item.IsChatModerator;
 					bool isChatSponsor = item.IsChatSponsor;
 
-					comments.Add(id, new YoutubeLiveComment(id, publishedAt,c,isOwner,isModerator,isChatSponsor));
+					YoutubeLiveComment newComment = new YoutubeLiveComment(id, publishedAt, c, isOwner, isModerator, isChatSponsor);
+					comments.Add(id, newComment);
+
+					if(!LiveComments.ContainsKey(id))
+					{
+						LiveComments.Add(id, newComment);
+					}
 				}
 			}
 		}
 
 		public async Task GetChatCommentAsync()
 		{
-			Comments = new ObservableSynchronizedCollection<string>();
+			DisplayComments = new ObservableSynchronizedCollection<string>();
 			await Task.Run(() => 
 			{
 				while (true)
 				{
 					System.Threading.Thread.Sleep(500);//コメントを取得する処理
-					Comments.Add("aaa");
+					DisplayComments.Add("aaa");
 				}
 			});
 		}

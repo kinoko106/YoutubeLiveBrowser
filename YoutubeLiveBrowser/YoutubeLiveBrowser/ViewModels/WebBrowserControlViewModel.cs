@@ -31,11 +31,11 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			SourceURL = inSourceURL;
 			//ChannelId = "UCD-miitqNY3nyukJ4Fnf4_A";//いいんちょ
-			//ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
+			ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
 			//ChannelId = "UCv1fFr156jc65EMiLbaLImw";//rikiya
 			//ChannelId = "UCsg-YqdqQ-KFF0LNk23BY4A";//でろ
 			//ChannelId = "UC48jH1ul-6HOrcSSfoR02fQ";//リリ
-			ChannelId = "UCvmppcdYf4HOv-tFQhHHJMA";//もいもい
+			//ChannelId = "UCvmppcdYf4HOv-tFQhHHJMA";//もいもい
 			Comment = "test";
 			Comments = new ObservableSynchronizedCollection<string>();
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());
