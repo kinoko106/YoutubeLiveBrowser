@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Livet;
 using Livet.Commands;
+using YoutubeLiveBrowser.Entity;
 using YoutubeLiveBrowser.Models;
 
 namespace YoutubeLiveBrowser.ViewModels
@@ -24,23 +25,23 @@ namespace YoutubeLiveBrowser.ViewModels
 			Width = 860;
 		}
 
-		public WebBrowserControlViewModel(string inSourceURL)
+		public WebBrowserControlViewModel(string inAPIKey)
 		{
 			Height = 1080;
 			Width = 1900;
 
-			SourceURL = inSourceURL;
 			//ChannelId = "UCD-miitqNY3nyukJ4Fnf4_A";//いいんちょ
 			ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
 			//ChannelId = "UCv1fFr156jc65EMiLbaLImw";//rikiya
 			//ChannelId = "UCsg-YqdqQ-KFF0LNk23BY4A";//でろ
 			//ChannelId = "UC48jH1ul-6HOrcSSfoR02fQ";//リリ
-			//ChannelId = "UCvmppcdYf4HOv-tFQhHHJMA";//もいもい
-			Comment = "test";
+			//ChannelId = "UCvmppcdYf4HOv-tFQhHHJMA";//もいもいUCNsidkYpIAQ4QaufptQBPHQ
+			//ChannelId = "UCNsidkYpIAQ4QaufptQBPHQ";
+			//Comments = new ObservableSynchronizedCollection<string>();
+			
+			m_Controller = new YoutubeLiveController(ChannelId, inAPIKey);
 			Comments = new ObservableSynchronizedCollection<string>();
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());
-
-			m_Controller = new YoutubeLiveController(ChannelId);
 		}
 
 		#region SourceURL
@@ -111,23 +112,6 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
-		#region Comment
-		private string _Comment;
-
-		public string Comment
-		{
-			get
-			{ return _Comment; }
-			set
-			{
-				if (_Comment == value)
-					return;
-				_Comment = value;
-				RaisePropertyChanged(nameof(Comment));
-			}
-		}
-		#endregion
-
 		#region Comments
 		private ObservableSynchronizedCollection<string> _Comments;
 
@@ -170,7 +154,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			{
 				if (_GetComment == null)
 				{
-					_GetComment = new ViewModelCommand(GetChatComment);
+					_GetComment = new ViewModelCommand(GetChatCommentAsync);
 				}
 				return _GetComment;
 			}
@@ -186,39 +170,45 @@ namespace YoutubeLiveBrowser.ViewModels
 			LiveChatId = await m_Controller.GetChatIdAsync();
 		}
 
+		private async void GetChatCommentAsync()
+		{
+			//await Task.Run(() =>
+			//{
+			//	while (true)
+			//	{
+			//		Comments.Add("aaa");
+			//	}
+			//});
+
+			//await m_Controller.GetChatCommentAsync();
+			//ここでコメントのコレクション変更を受け取って、画面に反映
+
+			await Task.Run(async () => 
+			{
+				var oldComments = new Dictionary<string, YoutubeLiveComment>();
+				while (true)
+				{
+					var newComments = await m_Controller.GetChatCommentAsync();
+
+					foreach (var comment in newComments)
+					{
+						if (!oldComments.ContainsKey(comment.Key))
+						{
+							//Comments.Add(comment.Value.Comment);
+							//CommentTimes.Add(comment.Value.PublishedAt.ToLongTimeString());
+							Comments.Add(comment.Value.PublishedAt.ToLongTimeString() + ":" + comment.Value.CommentUserName + ":" + comment.Value.Comment);
+							oldComments.Add(comment.Key, comment.Value);
+						}
+					}
+				}
+			});
+
+		}
+
 		private void GetChatComment()
 		{
 			m_Controller.GetChatComment();
 			//ここでコメントのコレクション変更を受け取って、画面に反映
-		}
-
-		public async void GetChatCommentTest()
-		{
-			await Task.Run(() =>
-				{
-					for (int i = 0; i < 100; i++)
-					{
-						//System.Threading.Thread.Sleep(500);
-						Comments.Add("aaa");
-					}
-				}
-			);
-			////別スレッドでコメント取得・更新したい
-			//Comments = new ObservableSynchronizedCollection<string>();
-			//BindingOperations.EnableCollectionSynchronization(Comments, new object());
-			//Action a = async () =>
-			//{
-			//	await Task.Run(() =>
-			//	{
-			//		for (int i = 0; i < 10; i++)
-			//		{
-			//			System.Threading.Thread.Sleep(100);
-			//			Comments.Add("aaa");
-			//		}
-			//	}
-			//	);
-			//};
-			//a();
 		}
 	}
 }

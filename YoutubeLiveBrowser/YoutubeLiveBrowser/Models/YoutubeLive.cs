@@ -15,19 +15,6 @@ namespace YoutubeLiveBrowser.Models
 		public static string RequestUrl = "http://localhost:8080";
 		public static string TokenUrl = "https://www.googleapis.com/oauth2/v4/token";
 		public static string APIKey = "";//自分で生成したやつ
-
-		//public static string AuthUrl
-		//{
-		//	get
-		//	{
-		//		string path = APIPath
-		//					+ "&client_id=" + ClientId
-		//					+ "&redirect_uri=" + RequestUrl
-		//					+ "&scope=" + "https://www.googleapis.com/auth/youtube.readonly"
-		//					+ "&access_type=" + "offline";
-		//		return path;
-		//	}
-		//}
 	}
 
 	

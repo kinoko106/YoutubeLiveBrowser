@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -24,12 +25,23 @@ namespace YoutubeLiveBrowser.Resources.Component
 		public WebBrowserControl()
 		{
 			this.InitializeComponent();
+		}
 
-			//var axIWebBrowser2 = typeof(WebBrowser).GetProperty("AxIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
-			//var comObj = axIWebBrowser2.GetValue(browser, null);
+		private void ListBox_TargetUpdated(object sender, DataTransferEventArgs e)
+		{
+			(CommentList.ItemsSource as INotifyCollectionChanged).CollectionChanged += new NotifyCollectionChangedEventHandler(ListBox_CollectionChanged);
+		}
+		void ListBox_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			try
+			{
+				var comment = CommentList.Items[CommentList.Items.Count - 1];
+				CommentList.ScrollIntoView(comment);
+			}
+			catch
+			{
 
-			//// JavaScriptのエラー表示を抑止する
-			//comObj.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, comObj, new object[] { true });
+			}
 		}
 	}
 }

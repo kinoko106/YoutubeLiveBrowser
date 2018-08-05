@@ -128,11 +128,20 @@ namespace YoutubeLiveBrowser.Models
 		#region コンストラクタ
 		public YoutubeLiveChatMessageItem(dynamic inYoutubeLiveChatMessageItem)
 		{
-			Kind = inYoutubeLiveChatMessageItem.kind;
-			Etag = inYoutubeLiveChatMessageItem.etag;
-			Id = inYoutubeLiveChatMessageItem.id;
-			Snippet = new Snippet(inYoutubeLiveChatMessageItem.snippet);
-			AuthorDetails = new AuthorDetails(inYoutubeLiveChatMessageItem.authorDetails);
+			try
+			{
+				Kind = inYoutubeLiveChatMessageItem.kind;
+				Etag = inYoutubeLiveChatMessageItem.etag;
+				Id = inYoutubeLiveChatMessageItem.id;
+				Snippet = new Snippet(inYoutubeLiveChatMessageItem.snippet);
+				AuthorDetails = new AuthorDetails(inYoutubeLiveChatMessageItem.authorDetails);
+			}
+			catch(Exception e)
+			{
+				string errorMessage = e.Message;
+				string source = e.Source;
+				string stacktrace = e.StackTrace;
+			}
 		}
 		public YoutubeLiveChatMessageItem(string kind,
 			string etag,
@@ -155,6 +164,7 @@ namespace YoutubeLiveBrowser.Models
 		public AuthorDetails AuthorDetails { get; set; }
 
 		//参照用プロパティ
+		public string DisplayName { get { return AuthorDetails.DisplayName; } }         //コメントした人の名前
 		public DateTime PublishedAt { get { return Snippet.PublishedAt; } }				//コメントされた時間
 		public string DisplayMessage { get { return Snippet.DisplayMessage; } }			//コメント
 		public bool IsChatOwner { get { return AuthorDetails.IsChatOwner; } }			//配信者コメントか
