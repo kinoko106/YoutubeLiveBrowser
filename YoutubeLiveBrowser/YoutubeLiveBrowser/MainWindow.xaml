@@ -1,4 +1,4 @@
-﻿<Window x:Class="YoutubeLiveBrowser.MainWindow"
+﻿<Mah:MetroWindow x:Class="YoutubeLiveBrowser.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:YoutubeLiveBrowser"
         xmlns:vm="clr-namespace:YoutubeLiveBrowser.ViewModels"
         xmlns:component="clr-namespace:YoutubeLiveBrowser.Resources.Component"
+        xmlns:Mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel},IsDesignTimeCreatable=True}"
         d:DesignHeight="{Binding Height}"
@@ -21,4 +22,4 @@
         <!--<WebBrowser Source="https://www.youtube.com/watch?v=quuZ06TLy-E;ab_channel=%E6%9C%88%E3%83%8E%E7%BE%8E%E5%85%8E"/>-->
         <!--<WebBrowser Source="C:\Users\daichiti\Source\Repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\Resources\test.html"/>-->
     </Grid>
-</Window>
+</Mah:MetroWindow>

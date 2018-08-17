@@ -15,6 +15,23 @@ namespace YoutubeLiveBrowser.Models
 		public static string RequestUrl = "http://localhost:8080";
 		public static string TokenUrl = "https://www.googleapis.com/oauth2/v4/token";
 		public static string APIKey = "";//自分で生成したやつ
+
+		//partに指定するパラメータのリスト
+		public enum YoutubePartParameters
+		{
+			id,
+			snippet,
+			contentDetails,
+			fileDetails,
+			liveStreamingDetails,
+			player,
+			processingDetails,
+			recordingDetails,
+			statistics,
+			status,
+			suggestions,
+			topicDetails
+		}
 	}
 
 	

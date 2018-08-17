@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:YoutubeLiveBrowser.Resources.Component"
              xmlns:vm="clr-namespace:YoutubeLiveBrowser.ViewModels"
+             xmlns:Mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance {x:Type vm:WebBrowserControlViewModel},IsDesignTimeCreatable=True}"
              d:DesignHeight="{Binding Height,Mode=TwoWay}"
@@ -34,13 +35,16 @@
                     </StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="自分のChannelID" Height="20" FontSize="11"></Label>
+                            <TextBlock Text="自分のChannelID" Height="20" ></TextBlock>
                             <TextBox Width="120"></TextBox>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel>
-                        <Label Content="チャンネル登録リスト"></Label>
-                        <ListBox x:Name="FeedChannelList" Height="20"></ListBox>
+                        <TextBlock Text="チャンネル登録リスト"></TextBlock>
+                        <ComboBox  x:Name="FeedChannelList" Height="20" 
+                                 ItemsSource="{Binding Subscriptions,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}">
+                        </ComboBox>
+                        <Mah:ProgressRing x:Name="ChannelProgress" IsActive="{Binding IsProgressActive}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

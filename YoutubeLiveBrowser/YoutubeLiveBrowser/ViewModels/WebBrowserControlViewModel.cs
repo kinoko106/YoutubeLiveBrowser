@@ -13,12 +13,31 @@ using Livet.Commands;
 using YoutubeLiveBrowser.Entity;
 using YoutubeLiveBrowser.Models;
 
+using DotNetOpenAuth.OAuth2;
+
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Requests;
+using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.Auth.OAuth2.Web;
+using Google.Apis.Services;
+using Google.Apis.Util;
+using Google.Apis.YouTube.v3;
+using Google.Apis.YouTube.v3.Data;
+using System.Threading;
+using Google.Apis.Util.Store;
+
 namespace YoutubeLiveBrowser.ViewModels
 {
 	class WebBrowserControlViewModel : ControlViewModelBase
 	{
 		YoutubeLiveController m_Controller;
 
+		#region コンストラクタ
+		/// <summary>
+		/// コンストラクタ
+		/// </summary>
 		public WebBrowserControlViewModel()
 		{
 			Height = 400;
@@ -41,8 +60,19 @@ namespace YoutubeLiveBrowser.ViewModels
 			
 			m_Controller = new YoutubeLiveController(ChannelId, inAPIKey);
 			Comments = new ObservableSynchronizedCollection<string>();
+
+			IsProgressActive = true;
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());
+			Action a = async () =>
+			{
+				var list = await m_Controller.GetSubscriptionNamesAsync();
+				Subscriptions = new ObservableSynchronizedCollection<string>(list.Values);
+				IsProgressActive = false;
+			};
+			a();
+			
 		}
+		#endregion
 
 		#region SourceURL
 		private string _SourceURL;
@@ -112,6 +142,23 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region IsProgressActive
+		private bool _IsProgressActive;
+
+		public bool IsProgressActive
+		{
+			get
+			{ return _IsProgressActive; }
+			set
+			{
+				if (_IsProgressActive == value)
+					return;
+				_IsProgressActive = value;
+				RaisePropertyChanged(nameof(IsProgressActive));
+			}
+		}
+		#endregion
+
 		#region Comments
 		private ObservableSynchronizedCollection<string> _Comments;
 
@@ -125,6 +172,23 @@ namespace YoutubeLiveBrowser.ViewModels
 					return;
 				_Comments = value;
 				RaisePropertyChanged(nameof(Comments));
+			}
+		}
+		#endregion
+
+		#region Subscriptions
+		private ObservableSynchronizedCollection<string> _Subscriptions;
+
+		public ObservableSynchronizedCollection<string> Subscriptions
+		{
+			get
+			{ return _Subscriptions; }
+			set
+			{
+				if (_Subscriptions == value)
+					return;
+				_Subscriptions = value;
+				RaisePropertyChanged(nameof(Subscriptions));
 			}
 		}
 		#endregion
@@ -161,6 +225,10 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region GetLiveStreamAsync
+		/// <summary>
+		/// GetLiveStreamAsync
+		/// </summary>
 		private async void GetLiveStreamAsync()
 		{
 			VideoId = string.Empty;
@@ -172,15 +240,6 @@ namespace YoutubeLiveBrowser.ViewModels
 
 		private async void GetChatCommentAsync()
 		{
-			//await Task.Run(() =>
-			//{
-			//	while (true)
-			//	{
-			//		Comments.Add("aaa");
-			//	}
-			//});
-
-			//await m_Controller.GetChatCommentAsync();
 			//ここでコメントのコレクション変更を受け取って、画面に反映
 
 			await Task.Run(async () => 
@@ -204,6 +263,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			});
 
 		}
+		#endregion
 
 		private void GetChatComment()
 		{

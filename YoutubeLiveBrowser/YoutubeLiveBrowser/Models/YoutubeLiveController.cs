@@ -1,4 +1,5 @@
 ﻿using Codeplex.Data;
+using Google.Apis.YouTube.v3.Data;
 using Livet;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace YoutubeLiveBrowser.Models
 {
 	class YoutubeLiveController
 	{
+		//apiを使って取得してきた情報を画面表示用に加工するのがこいつの仕事
+
 		public string ChannelId { get; set; }
 		public string VideoId { get; set; }
 		public string LiveChatId { get; set; }
@@ -24,8 +27,9 @@ namespace YoutubeLiveBrowser.Models
 
 		public string MyChannelId { get; set; }
 
-		public Dictionary<string, YoutubeLiveComment> LiveComments;
+		public YoutubeApiService ApiService { get; set; }
 
+		public Dictionary<string, YoutubeLiveComment> LiveComments;
 		public ObservableSynchronizedCollection<string> DisplayComments { get; set; }
 
 		#region コンストラクタ
@@ -48,8 +52,10 @@ namespace YoutubeLiveBrowser.Models
 			DisplayComments = new ObservableSynchronizedCollection<string>();
 			LiveComments = new Dictionary<string, YoutubeLiveComment>();
 			BindingOperations.EnableCollectionSynchronization(DisplayComments, new object());
+			ApiService = new YoutubeApiService(inAPIKey);
 		}
 
+		//使ってない
 		public YoutubeLiveController(string inChannelId, string inAPIKey, ObservableSynchronizedCollection<string> inComments)
 		{
 			ChannelId = inChannelId;
@@ -331,7 +337,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetStream
+		#region GetMyFeedChanneld
 		/// <summary>
 		/// 最新の動画IDを取得
 		/// </summary>
@@ -370,5 +376,34 @@ namespace YoutubeLiveBrowser.Models
 			return VideoId;
 		}
 		#endregion
+
+		public async Task<List<Subscription>> GetSubscriptionAsync(string inChannelId)
+		{
+			return await ApiService.GetSubscriptionsAsync(inChannelId);
+		}
+
+		public async Task<List<string>> GetSubscriptionIdsAsync()
+		{
+			var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");
+			return ids.Select(x => x.Snippet.ResourceId.ChannelId).ToList();
+		}
+
+		public async Task<Dictionary<string,string>> GetSubscriptionNamesAsync()
+		{
+			//var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");
+			var ids = await GetSubscriptionAsync("UC6lIYMjiBf9xwxTPtlvaAOw");
+			Dictionary<string, string> nameAndIds = new Dictionary<string, string>();
+
+			await Task.Run(() =>
+			{
+				foreach (string channelId in ids.Select(x => x.Snippet.ResourceId.ChannelId).ToList())
+				{
+					string name = ApiService.GetChannelName(channelId);
+					nameAndIds.Add(channelId, name);
+				}
+			});
+
+			return nameAndIds;
+		}
 	}
 }
