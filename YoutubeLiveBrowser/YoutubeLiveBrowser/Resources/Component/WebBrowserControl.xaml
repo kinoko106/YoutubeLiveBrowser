@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:YoutubeLiveBrowser.Resources.Component"
              xmlns:vm="clr-namespace:YoutubeLiveBrowser.ViewModels"
              xmlns:Mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance {x:Type vm:WebBrowserControlViewModel},IsDesignTimeCreatable=True}"
              d:DesignHeight="{Binding Height,Mode=TwoWay}"
@@ -14,39 +15,46 @@
         <!--<WebBrowser Height="480" x:Name="browser" Source="https://www.youtube.com/watch?v=YmYcyJLSaEY;ab_channel=%E6%A8%8B%E5%8F%A3%E6%A5%93%E3%80%90%E3%81%AB%E3%81%98%E3%81%95%E3%82%93%E3%81%98%E6%89%80%E5%B1%9E%E3%80%91"/>-->
         <StackPanel>
             <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="ChannelId:"></TextBlock>
-                            <TextBox x:Name="channelIdInput" Text="{Binding ChannelId,Mode=TwoWay}" Width="200"></TextBox>
-                            <Button Content="Submit" Width="80" Command="{Binding SubmitChannelId}"></Button>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="VidelId:"></TextBlock>
-                            <TextBox Text="{Binding VideoId,Mode=TwoWay}" Width="200"></TextBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="LiveChatId:"></TextBlock>
-                            <TextBox Text="{Binding LiveChatId,Mode=TwoWay}" Width="200"></TextBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="GetComment Start" Width="120" Command="{Binding GetComment}"></Button>
-                        </StackPanel>
+                <StackPanel Orientation="Vertical" Height="auto">
+                    <StackPanel Orientation="Horizontal" Height="20">
+                            <TextBlock Text="チャンネル登録リスト"></TextBlock>
+                            <Mah:ProgressRing x:Name="ChannelProgress" IsActive="{Binding IsProgressActive}" Height="20" Width="19"/>
                     </StackPanel>
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="自分のChannelID" Height="20" ></TextBlock>
-                            <TextBox Width="120"></TextBox>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="チャンネル登録リスト"></TextBlock>
-                        <ComboBox  x:Name="FeedChannelList" Height="20" 
-                                 ItemsSource="{Binding Subscriptions,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}">
+                    <StackPanel Orientation="Vertical" Margin="0,2,0,2">
+                        <ComboBox x:Name="SubscriptionChannelList" Height="20" Width="250"
+                                      ItemsSource="{Binding Subscriptions, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValue="{Binding SelectedChannelId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      HorizontalAlignment="Left">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding SubscriptionSelectedChanged}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </ComboBox>
-                        <Mah:ProgressRing x:Name="ChannelProgress" IsActive="{Binding IsProgressActive}"/>
                     </StackPanel>
                 </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                <Grid Height="auto">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="動画ID" Grid.Column="0" Grid.Row="0"></TextBlock>
+                    <TextBlock Text=":" Grid.Column="1" Grid.Row="0"></TextBlock>
+                    <TextBox Text="{Binding VideoId}" Width="200" Grid.Column="2" Grid.Row="0"/>
+                    <TextBlock Text="チャットID" Grid.Column="0" Grid.Row="1" TextAlignment="Right"/>
+                    <TextBlock Text=":" Grid.Column="1" Grid.Row="1"></TextBlock>
+                    <TextBox Text="{Binding LiveChatId}" Grid.Column="2" Grid.Row="1"></TextBox>
+                </Grid>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                <Button Content="GetComment Start" Width="120" Command="{Binding GetComment}"></Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <ListBox x:Name="CommentList"

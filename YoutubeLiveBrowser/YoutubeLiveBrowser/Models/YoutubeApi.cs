@@ -55,7 +55,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region
+		#region GetSubscriptionsAsync
 		/// <summary>
 		/// 指定したチャンネルIDが登録しているチャンネルを取得
 		/// </summary>
@@ -87,8 +87,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-
-		#region
+		#region GetChannelName
 		/// <summary>
 		/// 指定したチャンネルIDの名前
 		/// </summary>
@@ -104,7 +103,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region
+		#region GetChannelNameAsync
 		/// <summary>
 		/// 指定したチャンネルIDの名前
 		/// </summary>
@@ -120,49 +119,21 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		//api使わないもの
-		#region GetStreamAsync
+		#region GetChatIdAsync
 		/// <summary>
-		/// 
+		/// 指定したチャットIDを取得
 		/// </summary>
+		/// <param name="channelId"></param>
 		/// <returns></returns>
-		public async Task<string> GetStreamAsync(string inChannelId)
+		public async Task<string> GetChatIdAsync(string inVideoId)
 		{
-			string videoId = string.Empty;
-			await Task.Run(() =>
-			{
-				string reqString = "https://www.youtube.com/channel/" + inChannelId + "/videos?flow=list&live_view=501&view=2";
-				var videoIdRequest = WebRequest.Create("https://www.youtube.com/channel/" + inChannelId + "/videos?flow=list&live_view=501&view=2");
-				try
-				{
-					using (var videoIdResponse = videoIdRequest.GetResponse())
-					{
-						using (var videoIdStream = new StreamReader(videoIdResponse.GetResponseStream(), Encoding.UTF8))
-						{
-							var videoIdRegex = new Regex("href=\"\\/watch\\?v=(.+?)\"", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			var listRequest = _Service.Videos.List(YoutubeLive.YoutubePartParameters.liveStreamingDetails.ToString());
+			listRequest.Id = inVideoId;
+			var responce = await listRequest.ExecuteAsync();
 
-							var videoIdMatch = videoIdRegex.Match(videoIdStream.ReadToEnd());
-
-							if (!videoIdMatch.Success)
-							{
-								videoId = "ストリーミングが見つかりませんでした";
-							}
-
-							var index1 = videoIdMatch.Value.LastIndexOf('=') + 1;
-							var index2 = videoIdMatch.Value.LastIndexOf('"');
-
-							videoId = videoIdMatch.Value.Substring(index1, index2 - index1);
-						}
-					}
-				}
-				catch
-				{
-					//例外にする
-					videoId = "ストリーミングが見つかりませんでした";
-				}
-			});
-			return videoId;
+			return responce.Items.First().LiveStreamingDetails.ActiveLiveChatId;
 		}
 		#endregion
+
 	}
 }

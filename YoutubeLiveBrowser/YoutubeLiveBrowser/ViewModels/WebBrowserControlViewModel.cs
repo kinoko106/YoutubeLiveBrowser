@@ -60,17 +60,14 @@ namespace YoutubeLiveBrowser.ViewModels
 			
 			m_Controller = new YoutubeLiveController(ChannelId, inAPIKey);
 			Comments = new ObservableSynchronizedCollection<string>();
-
-			IsProgressActive = true;
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());
+
 			Action a = async () =>
 			{
-				var list = await m_Controller.GetSubscriptionNamesAsync();
-				Subscriptions = new ObservableSynchronizedCollection<string>(list.Values);
-				IsProgressActive = false;
+				await GetYoutubeLiveStreamInfos();
+				GetSubscriptionNames();
 			};
 			a();
-			
 		}
 		#endregion
 
@@ -108,6 +105,23 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region SelectedChannelId
+		private string _SelectedChannelId;
+
+		public string SelectedChannelId
+		{
+			get
+			{ return _SelectedChannelId; }
+			set
+			{
+				if (_SelectedChannelId == value)
+					return;
+				_SelectedChannelId = value;
+				RaisePropertyChanged(nameof(SelectedChannelId));
+			}
+		}
+		#endregion
+
 		#region VideoId
 		private string _VideoId;
 
@@ -138,6 +152,46 @@ namespace YoutubeLiveBrowser.ViewModels
 					return;
 				_LiveChatId = value;
 				RaisePropertyChanged(nameof(LiveChatId));
+			}
+		}
+		#endregion
+
+		#region LiveChatIds
+		/// <summary>
+		/// 放送中YoutubeLiveのチャットID
+		/// </summary>
+		private ObservableSynchronizedCollection<string> _LiveChatIds;
+
+		public ObservableSynchronizedCollection<string> LiveChatIds
+		{
+			get
+			{ return _LiveChatIds; }
+			set
+			{
+				if (_LiveChatIds == value)
+					return;
+				_LiveChatIds = value;
+				RaisePropertyChanged(nameof(LiveChatIds));
+			}
+		}
+		#endregion
+
+		#region VideoIds
+		/// <summary>
+		/// 放送中の動画ID
+		/// </summary>
+		private ObservableSynchronizedCollection<string> _VideoIds;
+
+		public ObservableSynchronizedCollection<string> VideoIds
+		{
+			get
+			{ return _VideoIds; }
+			set
+			{
+				if (_VideoIds == value)
+					return;
+				_VideoIds = value;
+				RaisePropertyChanged(nameof(VideoIds));
 			}
 		}
 		#endregion
@@ -202,7 +256,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			{
 				if (_SubmitChannelId == null)
 				{
-					_SubmitChannelId = new ViewModelCommand(GetLiveStreamAsync);
+					_SubmitChannelId = new ViewModelCommand(()=> { });
 				}
 				return _SubmitChannelId;
 			}
@@ -225,19 +279,38 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region SubscriptionSelectedChanged
+		private ViewModelCommand _SubscriptionSelectedChanged = null;
+
+		public ViewModelCommand SubscriptionSelectedChanged
+		{
+			get
+			{
+				if (_SubscriptionSelectedChanged == null)
+				{
+					_SubscriptionSelectedChanged = new ViewModelCommand(SelectChannelId);
+				}
+				return _SubscriptionSelectedChanged;
+			}
+		}
+		#endregion
+
 		#region GetLiveStreamAsync
 		/// <summary>
 		/// GetLiveStreamAsync
 		/// </summary>
-		private async void GetLiveStreamAsync()
+		private async Task GetYoutubeLiveStreamInfos()
 		{
-			VideoId = string.Empty;
-			VideoId = await m_Controller.GetStreamAsync();
-
-			LiveChatId = string.Empty;
-			LiveChatId = await m_Controller.GetChatIdAsync();
+			IsProgressActive = true;
+			await m_Controller.GetYoutubeLiveStreamInfos(true);
+			IsProgressActive = false;
 		}
+		#endregion
 
+		#region GetChatCommentAsync
+		/// <summary>
+		/// GetChatCommentAsync
+		/// </summary>
 		private async void GetChatCommentAsync()
 		{
 			//ここでコメントのコレクション変更を受け取って、画面に反映
@@ -261,7 +334,6 @@ namespace YoutubeLiveBrowser.ViewModels
 					}
 				}
 			});
-
 		}
 		#endregion
 
@@ -269,6 +341,32 @@ namespace YoutubeLiveBrowser.ViewModels
 		{
 			m_Controller.GetChatComment();
 			//ここでコメントのコレクション変更を受け取って、画面に反映
+		}
+
+		#region GetSubscriptions
+		/// <summary>
+		/// 自分が登録しているチャンネルのチャンネルID
+		/// </summary>
+		private void GetSubscriptionNames()
+		{
+			var list = m_Controller.GetChannelNames();
+
+			Subscriptions = new ObservableSynchronizedCollection<string>(list);
+			SelectedChannelId = list.First();
+		}
+		#endregion
+
+		//private async Task<List<string>> GetChatIdAsync()
+		//{
+
+		//}
+		private async void SelectChannelId()
+		{
+			var infos = await m_Controller.GetYoutubeLiveStreamInfos(false);
+			if (infos == null) { return; }
+
+			LiveChatId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.LiveChatId).First();
+			VideoId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.VideoId).First();
 		}
 	}
 }

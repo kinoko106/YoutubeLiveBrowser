@@ -31,6 +31,10 @@ namespace YoutubeLiveBrowser.Models
 
 		public Dictionary<string, YoutubeLiveComment> LiveComments;
 		public ObservableSynchronizedCollection<string> DisplayComments { get; set; }
+		public Dictionary<string, string> SubscriptionNameAndId { get; set; }
+		public Dictionary<string, string> LiveChatIds { get; set; }
+		
+		public List<YoutubeLiveStreamInfo> YoutubeLiveStreamInfos { get; set; }
 
 		#region コンストラクタ
 		/// <summary>
@@ -49,21 +53,16 @@ namespace YoutubeLiveBrowser.Models
 		{
 			ChannelId = inChannelId;
 			APIKey = inAPIKey;
+
 			DisplayComments = new ObservableSynchronizedCollection<string>();
 			LiveComments = new Dictionary<string, YoutubeLiveComment>();
+			SubscriptionNameAndId = new Dictionary<string, string>();
+			LiveChatIds = new Dictionary<string, string>();
+
+			YoutubeLiveStreamInfos = new List<YoutubeLiveStreamInfo>();
+
 			BindingOperations.EnableCollectionSynchronization(DisplayComments, new object());
 			ApiService = new YoutubeApiService(inAPIKey);
-		}
-
-		//使ってない
-		public YoutubeLiveController(string inChannelId, string inAPIKey, ObservableSynchronizedCollection<string> inComments)
-		{
-			ChannelId = inChannelId;
-			APIKey = inAPIKey;
-			MyChannelId = "";
-			DisplayComments = new ObservableSynchronizedCollection<string>();
-			LiveComments = new Dictionary<string, YoutubeLiveComment>();
-			BindingOperations.EnableCollectionSynchronization(DisplayComments, new object());
 		}
 		#endregion
 
@@ -149,6 +148,48 @@ namespace YoutubeLiveBrowser.Models
 			});
 			return VideoId;
 		}
+
+		/// <summary>
+		/// GetStreamAsync
+		/// </summary>
+		/// <param name="inChannelId"></param>
+		/// <returns></returns>
+		public async Task<string> GetStreamAsync(string inChannelId)
+		{
+			string videoId = null;
+			await Task.Run(() =>
+			{
+				string reqString = "https://www.youtube.com/channel/" + inChannelId + "/videos?flow=list&live_view=501&view=2";
+				var videoIdRequest = WebRequest.Create("https://www.youtube.com/channel/" + inChannelId + "/videos?flow=list&live_view=501&view=2");
+				try
+				{
+					using (var videoIdResponse = videoIdRequest.GetResponse())
+					{
+						using (var videoIdStream = new StreamReader(videoIdResponse.GetResponseStream(), Encoding.UTF8))
+						{
+							var videoIdRegex = new Regex("href=\"\\/watch\\?v=(.+?)\"", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+							var videoIdMatch = videoIdRegex.Match(videoIdStream.ReadToEnd());
+
+							if (!videoIdMatch.Success)
+							{
+								videoId = "ストリーミングが見つかりませんでした";
+							}
+
+							var index1 = videoIdMatch.Value.LastIndexOf('=') + 1;
+							var index2 = videoIdMatch.Value.LastIndexOf('"');
+
+							videoId = videoIdMatch.Value.Substring(index1, index2 - index1);
+						}
+					}
+				}
+				catch
+				{
+					videoId = "ストリーミングが見つかりませんでした";
+				}
+			});
+			return videoId;
+		}
 		#endregion
 
 		#region GetChatId
@@ -220,6 +261,7 @@ namespace YoutubeLiveBrowser.Models
 			});
 			return LiveChatId;
 		}
+
 		#endregion
 
 		#region GetChatComment
@@ -337,46 +379,6 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetMyFeedChanneld
-		/// <summary>
-		/// 最新の動画IDを取得
-		/// </summary>
-		public string GetMyFeedChanneld()
-		{
-			var channelList = new List<string>();
-			var myFeedChanneldRequest = WebRequest.Create("https://www.youtube.com/feed/channels/" + MyChannelId /*+ "/videos?flow=list&live_view=501&view=2"*/);
-			try
-			{
-				using (var myFeedChanneldResponse = myFeedChanneldRequest.GetResponse())
-				{
-					using (var myFeedChannelIdStream = new StreamReader(myFeedChanneldResponse.GetResponseStream(), Encoding.UTF8))
-					{
-						var myFeedChannelIdRegex = new Regex("href=\"\\/watch\\?v=(.+?)\"", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
-						var channelIdIdMatch = myFeedChannelIdRegex.Match(myFeedChannelIdStream.ReadToEnd());
-
-						if (!channelIdIdMatch.Success)
-						{
-							VideoId = "ストリーミングが見つかりませんでした";
-
-							return VideoId;
-						}
-
-						var index1 = channelIdIdMatch.Value.LastIndexOf('=') + 1;
-						var index2 = channelIdIdMatch.Value.LastIndexOf('"');
-
-						VideoId = channelIdIdMatch.Value.Substring(index1, index2 - index1);
-					}
-				}
-			}
-			catch
-			{
-				return VideoId = "ストリーミングが見つかりませんでした";
-			}
-			return VideoId;
-		}
-		#endregion
-
 		public async Task<List<Subscription>> GetSubscriptionAsync(string inChannelId)
 		{
 			return await ApiService.GetSubscriptionsAsync(inChannelId);
@@ -390,8 +392,8 @@ namespace YoutubeLiveBrowser.Models
 
 		public async Task<Dictionary<string,string>> GetSubscriptionNamesAsync()
 		{
-			//var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");
-			var ids = await GetSubscriptionAsync("UC6lIYMjiBf9xwxTPtlvaAOw");
+			var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");
+			//var ids = await GetSubscriptionAsync("UC6lIYMjiBf9xwxTPtlvaAOw");//登録チャンネル多いサンプル
 			Dictionary<string, string> nameAndIds = new Dictionary<string, string>();
 
 			await Task.Run(() =>
@@ -405,5 +407,79 @@ namespace YoutubeLiveBrowser.Models
 
 			return nameAndIds;
 		}
+
+		#region GetYoutubeLiveStreamInfos
+		/// <summary>
+		/// 登録しているチャンネルの情報を取得
+		/// </summary>
+		/// <returns></returns>
+		public async Task<List<YoutubeLiveStreamInfo>> GetYoutubeLiveStreamInfos(bool IsRefresh)
+		{
+			if (IsRefresh)
+			{
+				var nameAndIds = await GetSubscriptionNamesAsync();
+
+				foreach (var pair in nameAndIds)
+				{
+					string channelId = pair.Key;
+					string channelName = pair.Value;
+					string videoId = await GetStreamAsync(channelId);
+					string liveChatId = await ApiService.GetChatIdAsync(videoId);
+
+					YoutubeLiveStreamInfos.Add(new YoutubeLiveStreamInfo(channelId, channelName, videoId, liveChatId));
+				}
+
+				return YoutubeLiveStreamInfos;
+			}
+			else
+			{
+				return YoutubeLiveStreamInfos;
+			}
+		}
+		#endregion
+
+		#region GetChannelIds
+		/// <summary>
+		/// チャンネルID一覧
+		/// </summary>
+		/// <returns></returns>
+		public List<string> GetChannelIds()
+		{
+			return YoutubeLiveStreamInfos?.Select(x => x.ChannelId).ToList();
+		}
+		#endregion
+
+		#region GetChannelNames
+		/// <summary>
+		/// チャンネル名一覧
+		/// </summary>
+		/// <returns></returns>
+		public List<string> GetChannelNames()
+		{
+			return YoutubeLiveStreamInfos?.Select(x => x.ChannelName).ToList();
+		}
+		#endregion
+
+		#region GetVideoIds
+		/// <summary>
+		/// 動画ID一覧
+		/// </summary>
+		/// <returns></returns>
+		public List<string> GetVideoIds()
+		{
+			return YoutubeLiveStreamInfos?.Select(x => x.VideoId).ToList();
+		}
+		#endregion
+
+		#region GetLiveChatIds
+		/// <summary>
+		/// チャットID一覧
+		/// </summary>
+		/// <returns></returns>
+		public List<string> GetLiveChatIds()
+		{
+			return YoutubeLiveStreamInfos?.Select(x => x.LiveChatId).ToList();
+		}
+		#endregion
 	}
 }

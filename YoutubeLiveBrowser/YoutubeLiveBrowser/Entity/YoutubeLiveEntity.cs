@@ -14,7 +14,19 @@ namespace YoutubeLiveBrowser.Entity
 	/// </summary>
 	public class YoutubeLiveStreamInfo
 	{
+		public YoutubeLiveStreamInfo(string channelId, 
+									string channelName,
+									string videoId, 
+									string liveChatId)
+		{
+			ChannelId = channelId;
+			ChannelName = channelName;
+			VideoId = videoId;
+			LiveChatId = liveChatId;
+		}
+
 		public string ChannelId { get; set; }   //チャンネルID
+		public string ChannelName { get; set; } //チャンネル名
 		public string VideoId { get; set; }     //動画ID
 		public string LiveChatId { get; set; }  //配信中のチャットID
 
