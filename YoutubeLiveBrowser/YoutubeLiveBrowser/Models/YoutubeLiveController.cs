@@ -29,8 +29,7 @@ namespace YoutubeLiveBrowser.Models
 
 		public YoutubeApiService ApiService { get; set; }
 
-		public Dictionary<string, YoutubeLiveComment> LiveComments;
-		public ObservableSynchronizedCollection<string> DisplayComments { get; set; }
+		public Dictionary<string, LiveChatMessage> LiveComments;
 		public Dictionary<string, string> SubscriptionNameAndId { get; set; }
 		public Dictionary<string, string> LiveChatIds { get; set; }
 		
@@ -54,14 +53,11 @@ namespace YoutubeLiveBrowser.Models
 			ChannelId = inChannelId;
 			APIKey = inAPIKey;
 
-			DisplayComments = new ObservableSynchronizedCollection<string>();
-			LiveComments = new Dictionary<string, YoutubeLiveComment>();
+			LiveComments = new Dictionary<string, LiveChatMessage>();
 			SubscriptionNameAndId = new Dictionary<string, string>();
 			LiveChatIds = new Dictionary<string, string>();
 
 			YoutubeLiveStreamInfos = new List<YoutubeLiveStreamInfo>();
-
-			BindingOperations.EnableCollectionSynchronization(DisplayComments, new object());
 			ApiService = new YoutubeApiService(inAPIKey);
 		}
 		#endregion
@@ -271,111 +267,78 @@ namespace YoutubeLiveBrowser.Models
 		/// </summary>
 		/// <returns></returns>
 		/// 
-		public void GetChatComment()
-		{
-			
-			var dateTimeNow = System.DateTime.Now;
-			dynamic messagesObject = null;
-			var commentDiff = new Dictionary<string,YoutubeLiveComment>();
+		//public void GetChatComment()
+		//{
+		//	var dateTimeNow = System.DateTime.Now;
+		//	dynamic messagesObject = null;
+		//	var commentDiff = new Dictionary<string,YoutubeLiveComment>();
 
-			while (true)
-			{
-				var messagesRequest = WebRequest.Create("https://www.googleapis.com/youtube/v3/liveChat/messages?part=snippet,authorDetails&liveChatId=" + LiveChatId + "&key=" + APIKey);
-				try
-				{
-					using (var messagesResponse = messagesRequest.GetResponse())
-					{
-						using (var messagesStream = new StreamReader(messagesResponse.GetResponseStream()))
-						{
-							messagesObject = DynamicJson.Parse(messagesStream.ReadToEnd());
-						}
-					}
-				}
-				catch(Exception e)
-				{
-					string errorMessage = e.Message;
-					return;
-					//Console.Error.WriteLine("Error: コメントの取得に失敗しました");
-				}
+		//	while (true)
+		//	{
+		//		var messagesRequest = WebRequest.Create("https://www.googleapis.com/youtube/v3/liveChat/messages?part=snippet,authorDetails&liveChatId=" + LiveChatId + "&key=" + APIKey);
+		//		try
+		//		{
+		//			using (var messagesResponse = messagesRequest.GetResponse())
+		//			{
+		//				using (var messagesStream = new StreamReader(messagesResponse.GetResponseStream()))
+		//				{
+		//					messagesObject = DynamicJson.Parse(messagesStream.ReadToEnd());
+		//				}
+		//			}
+		//		}
+		//		catch(Exception e)
+		//		{
+		//			string errorMessage = e.Message;
+		//			return;
+		//			//Console.Error.WriteLine("Error: コメントの取得に失敗しました");
+		//		}
 
-				var comments = new Dictionary<string, YoutubeLiveComment>();
-				var response = new YoutubeLiveChatMessageResponseItem(messagesObject);
-				foreach (var comment in response.ChatMessages)
-				{
-					string id = comment.Key;
-					string userName = comment.Value.DisplayName;
-					var item = comment.Value;
-					DateTime publishedAt = item.PublishedAt;
-					string c = item.DisplayMessage;
-					bool isOwner = item.IsChatOwner;
-					bool isModerator = item.IsChatModerator;
-					bool isChatSponsor = item.IsChatSponsor;
+		//		var comments = new Dictionary<string, YoutubeLiveComment>();
+		//		var response = new YoutubeLiveChatMessageResponseItem(messagesObject);
+		//		foreach (var comment in response.ChatMessages)
+		//		{
+		//			string id = comment.Key;
+		//			string userName = comment.Value.DisplayName;
+		//			var item = comment.Value;
+		//			DateTime publishedAt = item.PublishedAt;
+		//			string c = item.DisplayMessage;
+		//			bool isOwner = item.IsChatOwner;
+		//			bool isModerator = item.IsChatModerator;
+		//			bool isChatSponsor = item.IsChatSponsor;
 
-					YoutubeLiveComment newComment = new YoutubeLiveComment(id, userName, publishedAt, c, isOwner, isModerator, isChatSponsor);
-					comments.Add(id, newComment);
+		//			YoutubeLiveComment newComment = new YoutubeLiveComment(id, userName, publishedAt, c, isOwner, isModerator, isChatSponsor);
+		//			comments.Add(id, newComment);
 
-					if(!LiveComments.ContainsKey(id))
-					{
-						LiveComments.Add(id, newComment);
-					}
-				}
-			}
-		}
+		//			if(!LiveComments.ContainsKey(id))
+		//			{
+		//				LiveComments.Add(id, newComment);
+		//			}
+		//		}
+		//	}
+		//}
 		#endregion
 
 		#region GetChatCommentAsync
-		public async Task<Dictionary<string, YoutubeLiveComment>> GetChatCommentAsync()
+		public async Task<List<string>> GetChatCommentAsync()
 		{
-			var Comments = new Dictionary<string, YoutubeLiveComment>();
+			string chatId = "EiEKGFVDdjFmRnIxNTZqYzY1RU1pTGJhTEltdxIFL2xpdmU";
+			List<LiveChatMessage> messages = new List<LiveChatMessage>();
 
-			dynamic messagesObject = null;
-			var commentDiff = new Dictionary<string, YoutubeLiveComment>();
+			messages = await ApiService.GetChatCommentAsync(chatId);
 
-			await Task.Run(() =>
+			List<string> newComments = new List<string>();
+			foreach (var message in messages)
 			{
-				var messagesRequest = WebRequest.Create("https://www.googleapis.com/youtube/v3/liveChat/messages?part=snippet,authorDetails&liveChatId=" + LiveChatId + "&key=" + APIKey);
-				try
+				if (!LiveComments.ContainsKey(message.Id))
 				{
-					using (var messagesResponse = messagesRequest.GetResponse())
-					{
-						using (var messagesStream = new StreamReader(messagesResponse.GetResponseStream()))
-						{
-							messagesObject = DynamicJson.Parse(messagesStream.ReadToEnd());
-						}
-					}
+					LiveComments.Add(message.Id, message);
+					newComments.Add(message.Snippet.PublishedAt.ToString() + ":" +
+									message.AuthorDetails.DisplayName + 
+									message.Snippet.DisplayMessage);
 				}
-				catch
-				{
-					//Console.Error.WriteLine("Error: コメントの取得に失敗しました");
-				}
+			}
 
-				//SuperChatも一緒にとれる罠、JSONのフォーマットが違うので区別が必要
-				var comments = new Dictionary<string, YoutubeLiveComment>();
-				var response = new YoutubeLiveChatMessageResponseItem(messagesObject);
-				foreach (var comment in response.ChatMessages)
-				{
-					string id = comment.Key;
-					string userName = comment.Value.DisplayName;
-					var item = comment.Value;
-					DateTime publishedAt = item.PublishedAt;
-					string c = item.DisplayMessage;
-					bool isOwner = item.IsChatOwner;
-					bool isModerator = item.IsChatModerator;
-					bool isChatSponsor = item.IsChatSponsor;
-
-					YoutubeLiveComment newComment = new YoutubeLiveComment(id, userName, publishedAt, c, isOwner, isModerator, isChatSponsor);
-					comments.Add(id, newComment);
-
-					foreach (var com in comments)
-					{
-						if (!Comments.ContainsKey(com.Key))
-						{
-							Comments.Add(com.Key, com.Value);
-						}
-					}
-				}
-			});
-			return Comments;
+			return newComments;
 		}
 		#endregion
 

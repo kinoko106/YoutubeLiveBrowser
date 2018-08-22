@@ -314,34 +314,40 @@ namespace YoutubeLiveBrowser.ViewModels
 		private async void GetChatCommentAsync()
 		{
 			//ここでコメントのコレクション変更を受け取って、画面に反映
-
-			await Task.Run(async () => 
+			await Task.Run(async () =>
 			{
-				var oldComments = new Dictionary<string, YoutubeLiveComment>();
+				var oldComments = new List<string>();
 				while (true)
 				{
-					var newComments = await m_Controller.GetChatCommentAsync();
-
-					foreach (var comment in newComments)
+					var comments = await m_Controller.GetChatCommentAsync();
+					oldComments = comments;
+					foreach (var comment in comments)
 					{
-						if (!oldComments.ContainsKey(comment.Key))
-						{
-							//Comments.Add(comment.Value.Comment);
-							//CommentTimes.Add(comment.Value.PublishedAt.ToLongTimeString());
-							Comments.Add(comment.Value.PublishedAt.ToLongTimeString() + ":" + comment.Value.CommentUserName + ":" + comment.Value.Comment);
-							oldComments.Add(comment.Key, comment.Value);
-						}
+						Comments.Add(comment);
 					}
 				}
 			});
+			//await Task.Run(async () => 
+			//{
+			//	var oldComments = new Dictionary<string, YoutubeLiveComment>();
+			//	while (true)
+			//	{
+			//		var newComments = await m_Controller.GetChatCommentAsync();
+
+			//		foreach (var comment in newComments)
+			//		{
+			//			if (!oldComments.ContainsKey(comment.Key))
+			//			{
+			//				//Comments.Add(comment.Value.Comment);
+			//				//CommentTimes.Add(comment.Value.PublishedAt.ToLongTimeString());
+			//				Comments.Add(comment.Value.PublishedAt.ToLongTimeString() + ":" + comment.Value.CommentUserName + ":" + comment.Value.Comment);
+			//				oldComments.Add(comment.Key, comment.Value);
+			//			}
+			//		}
+			//	}
+			//});
 		}
 		#endregion
-
-		private void GetChatComment()
-		{
-			m_Controller.GetChatComment();
-			//ここでコメントのコレクション変更を受け取って、画面に反映
-		}
 
 		#region GetSubscriptions
 		/// <summary>

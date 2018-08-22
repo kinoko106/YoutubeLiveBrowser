@@ -50,7 +50,7 @@ namespace YoutubeLiveBrowser.Models
 			{
 				HttpClientInitializer = credential,
 				ApplicationName = "YoutubeLiveBrowser",
-				ApiKey = "AIzaSyBFC4kLWlrYZbddNr3VJRYMfK_ew473mlY",//ApiKey = "AIzaSyBFC4kLWlrYZbddNr3VJRYMfK_ew473mlY",
+				ApiKey = inApiKey,
 			});
 		}
 		#endregion
@@ -132,6 +132,21 @@ namespace YoutubeLiveBrowser.Models
 			var responce = await listRequest.ExecuteAsync();
 
 			return responce.Items.First().LiveStreamingDetails.ActiveLiveChatId;
+		}
+		#endregion
+
+		#region GetChatCommentAsync
+		/// <summary>
+		/// 指定したチャットのコメントを取得
+		/// </summary>
+		/// <param name="inLiveChatId"></param>
+		/// <returns></returns>
+		public async Task<List<LiveChatMessage>> GetChatCommentAsync(string inLiveChatId)
+		{
+			var listRequest = _Service.LiveChatMessages.List(inLiveChatId, YoutubeLive.YoutubePartParameters.snippet.ToString());
+			var responce = await listRequest.ExecuteAsync();
+
+			return responce.Items.ToList();
 		}
 		#endregion
 

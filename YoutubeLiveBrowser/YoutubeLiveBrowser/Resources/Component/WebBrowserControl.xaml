@@ -59,7 +59,7 @@
             <StackPanel Orientation="Horizontal">
                 <ListBox x:Name="CommentList"
                         ItemsSource="{Binding Comments,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}" 
-                         Height="300"  
+                         Height="265"  
                          Width="500"
                          TargetUpdated="ListBox_TargetUpdated"
                          ></ListBox>
