@@ -167,6 +167,7 @@
     </ApplicationDefinition>
     <Compile Include="DynamicJson.cs" />
     <Compile Include="Entity\YoutubeLiveEntity.cs" />
+    <Compile Include="Models\DataBaseAccess.cs" />
     <Compile Include="Models\YoutubeApi.cs" />
     <Compile Include="Models\YoutubeApiRsponce.cs" />
     <Compile Include="Models\YoutubeLive.cs" />

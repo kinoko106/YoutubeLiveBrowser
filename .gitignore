@@ -7,6 +7,9 @@
 *.userosscache
 *.sln.docstates
 .\YoutubeLiveBrowser\YoutubeLiveBrowser\App.config
+.\YoutubeLiveBrowser\App.config
+.\App.config
+App.config
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
