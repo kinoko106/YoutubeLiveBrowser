@@ -19,6 +19,7 @@ namespace YoutubeLiveBrowser.Models
 	class YoutubeLiveController
 	{
 		//apiを使って取得してきた情報を画面表示用に加工するのがこいつの仕事
+		public DataBaseAccess dataBaseAccess { get; set; }
 
 		public string ChannelId { get; set; }
 		public string VideoId { get; set; }
@@ -59,6 +60,8 @@ namespace YoutubeLiveBrowser.Models
 
 			YoutubeLiveStreamInfos = new List<YoutubeLiveStreamInfo>();
 			ApiService = new YoutubeApiService(inAPIKey);
+
+			dataBaseAccess = new DataBaseAccess();
 		}
 		#endregion
 
