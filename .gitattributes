@@ -1,4 +1,4 @@
-.YoutubeLiveBrowser\YoutubeLiveBrowser\App.config/ export-ignore
+.\YoutubeLiveBrowser\YoutubeLiveBrowser\App.config/ export-ignore
 .gitignore export-ignore
 .girattribute export-ignore
 
