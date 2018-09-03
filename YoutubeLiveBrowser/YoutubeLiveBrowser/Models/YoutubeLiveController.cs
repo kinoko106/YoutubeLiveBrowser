@@ -19,7 +19,8 @@ namespace YoutubeLiveBrowser.Models
 	class YoutubeLiveController
 	{
 		//apiを使って取得してきた情報を画面表示用に加工するのがこいつの仕事
-
+		public DataBaseAccess dataBaseAccess { get; set; }
+			
 		public string ChannelId { get; set; }
 		public string VideoId { get; set; }
 		public string LiveChatId { get; set; }
@@ -56,6 +57,8 @@ namespace YoutubeLiveBrowser.Models
 			LiveComments = new Dictionary<string, LiveChatMessage>();
 			SubscriptionNameAndId = new Dictionary<string, string>();
 			LiveChatIds = new Dictionary<string, string>();
+
+			dataBaseAccess = new DataBaseAccess();
 
 			YoutubeLiveStreamInfos = new List<YoutubeLiveStreamInfo>();
 			ApiService = new YoutubeApiService(inAPIKey);
