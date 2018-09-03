@@ -54,7 +54,9 @@
                 </Grid>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                <Button Content="GetComment Start" Width="120" Command="{Binding GetComment}"></Button>
+                <Button Content="GetComment Start" Width="120" 
+                        Command="{Binding GetComment}"
+                        IsEnabled="{Binding IsGetCommentEnable}"></Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <ListBox x:Name="CommentList"

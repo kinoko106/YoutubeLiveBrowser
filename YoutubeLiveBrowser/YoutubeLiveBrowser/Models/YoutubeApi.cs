@@ -27,6 +27,8 @@ namespace YoutubeLiveBrowser.Models
 			CreateApiService(inApiKey);
 		}
 
+		//partに複数指定する場合はカンマ区切りで文字列を連結すればok
+
 		#region CreateApiService
 		/// <summary>
 		/// サービスの作成
@@ -143,7 +145,9 @@ namespace YoutubeLiveBrowser.Models
 		/// <returns></returns>
 		public async Task<List<LiveChatMessage>> GetChatCommentAsync(string inLiveChatId)
 		{
-			var listRequest = _Service.LiveChatMessages.List(inLiveChatId, YoutubeLive.YoutubePartParameters.snippet.ToString());
+			var listRequest = _Service.LiveChatMessages.List(inLiveChatId, 
+															 YoutubeLive.YoutubePartParameters.snippet.ToString() + "," +
+															 YoutubeLive.YoutubePartParameters.authorDetails.ToString());
 			var responce = await listRequest.ExecuteAsync();
 
 			return responce.Items.ToList();

@@ -30,7 +30,8 @@ namespace YoutubeLiveBrowser.Models
 			statistics,
 			status,
 			suggestions,
-			topicDetails
+			topicDetails,
+			authorDetails
 		}
 	}
 }

@@ -57,7 +57,8 @@ namespace YoutubeLiveBrowser.ViewModels
 			//ChannelId = "UCvmppcdYf4HOv-tFQhHHJMA";//もいもいUCNsidkYpIAQ4QaufptQBPHQ
 			//ChannelId = "UCNsidkYpIAQ4QaufptQBPHQ";
 			//Comments = new ObservableSynchronizedCollection<string>();
-			
+
+			IsGetCommentEnable = false;
 			m_Controller = new YoutubeLiveController(ChannelId, inAPIKey);
 			Comments = new ObservableSynchronizedCollection<string>();
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());
@@ -213,6 +214,27 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		//IsGetCommentEnable
+
+		#region IsGetCommentEnable
+		/// <summary>
+		/// コメント取得ボタンが有効か
+		/// </summary>
+		private bool _IsGetCommentEnable;
+		public bool IsGetCommentEnable
+		{
+			get
+			{ return _IsGetCommentEnable; }
+			set
+			{
+				if (_IsGetCommentEnable == value)
+					return;
+				_IsGetCommentEnable = value;
+				RaisePropertyChanged(nameof(IsGetCommentEnable));
+			}
+		}
+		#endregion
+
 		#region Comments
 		private ObservableSynchronizedCollection<string> _Comments;
 
@@ -314,39 +336,31 @@ namespace YoutubeLiveBrowser.ViewModels
 		private async void GetChatCommentAsync()
 		{
 			//ここでコメントのコレクション変更を受け取って、画面に反映
-			await Task.Run(async () =>
+			try
 			{
-				var oldComments = new List<string>();
-				while (true)
+				await Task.Run(async () =>
 				{
-					var comments = await m_Controller.GetChatCommentAsync();
-					oldComments = comments;
-					foreach (var comment in comments)
+					var oldComments = new List<string>();
+					while (true)
 					{
-						Comments.Add(comment);
+						var comments = await m_Controller.GetChatCommentAsync(LiveChatId);
+						oldComments = comments;
+						foreach (var comment in comments)
+						{
+							Comments.Add(comment);
+						}
 					}
-				}
-			});
-			//await Task.Run(async () => 
-			//{
-			//	var oldComments = new Dictionary<string, YoutubeLiveComment>();
-			//	while (true)
-			//	{
-			//		var newComments = await m_Controller.GetChatCommentAsync();
+				});
+			}
+			catch(Exception e)
+			{
+				string errorMessage = e.Message;
+				string errorSource = e.Source;
 
-			//		foreach (var comment in newComments)
-			//		{
-			//			if (!oldComments.ContainsKey(comment.Key))
-			//			{
-			//				//Comments.Add(comment.Value.Comment);
-			//				//CommentTimes.Add(comment.Value.PublishedAt.ToLongTimeString());
-			//				Comments.Add(comment.Value.PublishedAt.ToLongTimeString() + ":" + comment.Value.CommentUserName + ":" + comment.Value.Comment);
-			//				oldComments.Add(comment.Key, comment.Value);
-			//			}
-			//		}
-			//	}
-			//});
+				Comments.Add(errorMessage + "\n" + errorSource);
+			}
 		}
+
 		#endregion
 
 		#region GetSubscriptions

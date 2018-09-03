@@ -62,91 +62,10 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetStream
-		/// <summary>
-		/// 最新の動画IDを取得
-		/// </summary>
-		public string GetStream()
-		{
-			var videoIdRequest = WebRequest.Create("https://www.youtube.com/channel/" + ChannelId + "/videos?flow=list&live_view=501&view=2");
-			try
-			{ 
-				using (var videoIdResponse = videoIdRequest.GetResponse())
-				{
-					using (var videoIdStream = new StreamReader(videoIdResponse.GetResponseStream(), Encoding.UTF8))
-					{
-						var videoIdRegex = new Regex("href=\"\\/watch\\?v=(.+?)\"", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
-						var videoIdMatch = videoIdRegex.Match(videoIdStream.ReadToEnd());
-
-						if (!videoIdMatch.Success)
-						{
-							VideoId = "ストリーミングが見つかりませんでした";
-							//Console.Error.WriteLine("Error: ストリーミングが見つかりませんでした");
-							//Console.ReadKey();
-
-							return VideoId;
-						}
-
-						var index1 = videoIdMatch.Value.LastIndexOf('=') + 1;
-						var index2 = videoIdMatch.Value.LastIndexOf('"');
-
-						VideoId = videoIdMatch.Value.Substring(index1, index2 - index1);
-					}
-				}
-			}
-			catch
-			{
-				
-				return VideoId = "ストリーミングが見つかりませんでした";
-			}
-			return VideoId;
-		}
-		#endregion
-
 		#region GetStreamAsync
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public async Task<string> GetStreamAsync()
-		{
-			await Task.Run(() =>
-			{
-				string reqString = "https://www.youtube.com/channel/" + ChannelId + "/videos?flow=list&live_view=501&view=2";
-				var videoIdRequest = WebRequest.Create("https://www.youtube.com/channel/" + ChannelId + "/videos?flow=list&live_view=501&view=2");
-				try
-				{
-					using (var videoIdResponse = videoIdRequest.GetResponse())
-					{
-						using (var videoIdStream = new StreamReader(videoIdResponse.GetResponseStream(), Encoding.UTF8))
-						{
-							var videoIdRegex = new Regex("href=\"\\/watch\\?v=(.+?)\"", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
-							var videoIdMatch = videoIdRegex.Match(videoIdStream.ReadToEnd());
-
-							if (!videoIdMatch.Success)
-							{
-								VideoId = "ストリーミングが見つかりませんでした";
-							}
-
-							var index1 = videoIdMatch.Value.LastIndexOf('=') + 1;
-							var index2 = videoIdMatch.Value.LastIndexOf('"');
-
-							VideoId = videoIdMatch.Value.Substring(index1, index2 - index1);
-						}
-					}
-				}
-				catch
-				{
-					VideoId = "ストリーミングが見つかりませんでした";
-				}
-			});
-			return VideoId;
-		}
-
-		/// <summary>
 		/// GetStreamAsync
+		/// 最新動画だけAPIで取れない？
 		/// </summary>
 		/// <param name="inChannelId"></param>
 		/// <returns></returns>
@@ -188,143 +107,17 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetChatId
-		/// <summary>
-		/// YoutubeのライブチャットIDを取得
-		/// 動画ID取得後に実行する
-		/// </summary>
-		public string GetChatId()
-		{
-			var liveChatIdRequest = WebRequest.Create("https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=" + VideoId + "&key=" + APIKey);
-
-			try
-			{
-				using (var liveChatIdResponse = liveChatIdRequest.GetResponse())
-				{
-					using (var liveChatIdStream = new StreamReader(liveChatIdResponse.GetResponseStream(), Encoding.UTF8))
-					{
-						var liveChatIdObject = DynamicJson.Parse(liveChatIdStream.ReadToEnd());
-
-						LiveChatId = liveChatIdObject.items[0].liveStreamingDetails.activeLiveChatId;
-
-						if (LiveChatId == null)
-						{
-							return LiveChatId = "Live Chat IDの取得に失敗しました";
-						}
-					}
-				}
-			}
-			catch
-			{
-				return LiveChatId = "Live Chat IDの取得に失敗しました";
-			}
-			return LiveChatId;
-		}
-		#endregion
-
-		#region GetChatIdAsync
-		/// <summary>
-		/// チャットIDを取得(非同期版)
-		/// </summary>
-		/// <returns></returns>
-		public async Task<string> GetChatIdAsync()
-		{
-			await Task.Run(() =>
-			{
-				string reqString = "https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=" + VideoId + "&key=" + APIKey;
-				var liveChatIdRequest = WebRequest.Create("https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=" + VideoId + "&key=" + APIKey);
-				try
-				{
-					using (var liveChatIdResponse = liveChatIdRequest.GetResponse())
-					{
-						using (var liveChatIdStream = new StreamReader(liveChatIdResponse.GetResponseStream(), Encoding.UTF8))
-						{
-							var liveChatIdObject = DynamicJson.Parse(liveChatIdStream.ReadToEnd());
-
-							LiveChatId = liveChatIdObject.items[0].liveStreamingDetails.activeLiveChatId;
-
-							if (LiveChatId == null)
-							{
-								LiveChatId = "Live Chat IDの取得に失敗しました";
-							}
-						}
-					}
-				}
-				catch
-				{
-					LiveChatId = "Live Chat IDの取得に失敗しました";
-				}
-			});
-			return LiveChatId;
-		}
-
-		#endregion
-
-		#region GetChatComment
-		/// <summary>
-		/// 非同期でチャット欄のコメントを取り続ける
-		/// あとでコレクションをに加算し、observerにaddする仕様に変更
-		/// </summary>
-		/// <returns></returns>
-		/// 
-		//public void GetChatComment()
-		//{
-		//	var dateTimeNow = System.DateTime.Now;
-		//	dynamic messagesObject = null;
-		//	var commentDiff = new Dictionary<string,YoutubeLiveComment>();
-
-		//	while (true)
-		//	{
-		//		var messagesRequest = WebRequest.Create("https://www.googleapis.com/youtube/v3/liveChat/messages?part=snippet,authorDetails&liveChatId=" + LiveChatId + "&key=" + APIKey);
-		//		try
-		//		{
-		//			using (var messagesResponse = messagesRequest.GetResponse())
-		//			{
-		//				using (var messagesStream = new StreamReader(messagesResponse.GetResponseStream()))
-		//				{
-		//					messagesObject = DynamicJson.Parse(messagesStream.ReadToEnd());
-		//				}
-		//			}
-		//		}
-		//		catch(Exception e)
-		//		{
-		//			string errorMessage = e.Message;
-		//			return;
-		//			//Console.Error.WriteLine("Error: コメントの取得に失敗しました");
-		//		}
-
-		//		var comments = new Dictionary<string, YoutubeLiveComment>();
-		//		var response = new YoutubeLiveChatMessageResponseItem(messagesObject);
-		//		foreach (var comment in response.ChatMessages)
-		//		{
-		//			string id = comment.Key;
-		//			string userName = comment.Value.DisplayName;
-		//			var item = comment.Value;
-		//			DateTime publishedAt = item.PublishedAt;
-		//			string c = item.DisplayMessage;
-		//			bool isOwner = item.IsChatOwner;
-		//			bool isModerator = item.IsChatModerator;
-		//			bool isChatSponsor = item.IsChatSponsor;
-
-		//			YoutubeLiveComment newComment = new YoutubeLiveComment(id, userName, publishedAt, c, isOwner, isModerator, isChatSponsor);
-		//			comments.Add(id, newComment);
-
-		//			if(!LiveComments.ContainsKey(id))
-		//			{
-		//				LiveComments.Add(id, newComment);
-		//			}
-		//		}
-		//	}
-		//}
-		#endregion
-
 		#region GetChatCommentAsync
-		public async Task<List<string>> GetChatCommentAsync()
+		/// <summary>
+		/// 選択したチャットIDのコメントを取得
+		/// </summary>
+		/// <param name="inLiveChatId"></param>
+		/// <returns></returns>
+		public async Task<List<string>> GetChatCommentAsync(string inLiveChatId)
 		{
-			string chatId = "EiEKGFVDdjFmRnIxNTZqYzY1RU1pTGJhTEltdxIFL2xpdmU";
 			List<LiveChatMessage> messages = new List<LiveChatMessage>();
 
-			messages = await ApiService.GetChatCommentAsync(chatId);
+			messages = await ApiService.GetChatCommentAsync(inLiveChatId);
 
 			List<string> newComments = new List<string>();
 			foreach (var message in messages)
@@ -333,7 +126,7 @@ namespace YoutubeLiveBrowser.Models
 				{
 					LiveComments.Add(message.Id, message);
 					newComments.Add(message.Snippet.PublishedAt.ToString() + ":" +
-									message.AuthorDetails.DisplayName + 
+									message.AuthorDetails.DisplayName + "  " +
 									message.Snippet.DisplayMessage);
 				}
 			}
@@ -355,7 +148,7 @@ namespace YoutubeLiveBrowser.Models
 
 		public async Task<Dictionary<string,string>> GetSubscriptionNamesAsync()
 		{
-			var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");
+			var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");//自分のチャンネルID　configから取る
 			//var ids = await GetSubscriptionAsync("UC6lIYMjiBf9xwxTPtlvaAOw");//登録チャンネル多いサンプル
 			Dictionary<string, string> nameAndIds = new Dictionary<string, string>();
 

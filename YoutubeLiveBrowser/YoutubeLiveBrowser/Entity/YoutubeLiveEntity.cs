@@ -52,7 +52,7 @@ namespace YoutubeLiveBrowser.Entity
 	{
 		public YoutubeLiveComment(
 			string commentId, 
-			string commentUserName,
+			string displayName,
 			DateTime publishedAt, 
 			string comment, bool 
 			isChatOwner, bool 
@@ -60,7 +60,7 @@ namespace YoutubeLiveBrowser.Entity
 			bool isChatModerator)
 		{
 			CommentId = commentId;
-			CommentUserName = commentUserName;
+			DisplayName = displayName;
 			PublishedAt = publishedAt;
 			Comment = comment;
 			IsChatOwner = isChatOwner;
@@ -69,7 +69,7 @@ namespace YoutubeLiveBrowser.Entity
 		}
 
 		public string CommentId { get; set; }       //コメントID
-		public string CommentUserName { get; set; } //コメントした人の名前
+		public string DisplayName { get; set; } //コメントした人の名前
 		public DateTime PublishedAt { get; set; }	//コメントされた日時
 		public string Comment { get; set; }         //コメント
 		public bool IsChatOwner { get; set; }		//配信者コメントか
