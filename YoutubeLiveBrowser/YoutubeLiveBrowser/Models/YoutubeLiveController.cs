@@ -20,20 +20,14 @@ namespace YoutubeLiveBrowser.Models
 	{
 		//apiを使って取得してきた情報を画面表示用に加工するのがこいつの仕事
 		public DataBaseAccess dataBaseAccess { get; set; }
-			
-		public string ChannelId { get; set; }
-		public string VideoId { get; set; }
-		public string LiveChatId { get; set; }
-		public string APIKey { get; set; }
-
-		public string MyChannelId { get; set; }
 
 		public YoutubeApiService ApiService { get; set; }
 
-		public Dictionary<string, LiveChatMessage> LiveComments;
+		public Dictionary<string, LiveChatMessage> LiveComments;//放送中のライブからとってきたコメント群、キーはコメントID
 		public Dictionary<string, string> SubscriptionNameAndId { get; set; }
 		public Dictionary<string, string> LiveChatIds { get; set; }
 		
+		public List<Channels> Channels { get; set; }
 		public List<YoutubeLiveStreamInfo> YoutubeLiveStreamInfos { get; set; }
 
 		#region コンストラクタ
@@ -52,13 +46,14 @@ namespace YoutubeLiveBrowser.Models
 		public YoutubeLiveController(string inChannelId,string inAPIKey)
 		{
 			ChannelId = inChannelId;
-			APIKey = inAPIKey;
 
 			LiveComments = new Dictionary<string, LiveChatMessage>();
 			SubscriptionNameAndId = new Dictionary<string, string>();
 			LiveChatIds = new Dictionary<string, string>();
 
 			dataBaseAccess = new DataBaseAccess();
+			var streams = dataBaseAccess.GetYoutubeLiveStreamInfo();
+			dataBaseAccess.GetYoutubeLiveComments(streams[0]);
 
 			YoutubeLiveStreamInfos = new List<YoutubeLiveStreamInfo>();
 			ApiService = new YoutubeApiService(inAPIKey);
@@ -185,6 +180,7 @@ namespace YoutubeLiveBrowser.Models
 					string videoId = await GetStreamAsync(channelId);
 					string liveChatId = await ApiService.GetChatIdAsync(videoId);
 
+					Channels.Add(new Channels(channelId, channelName));
 					YoutubeLiveStreamInfos.Add(new YoutubeLiveStreamInfo(channelId, channelName, videoId, liveChatId));
 				}
 
@@ -215,7 +211,8 @@ namespace YoutubeLiveBrowser.Models
 		/// <returns></returns>
 		public List<string> GetChannelNames()
 		{
-			return YoutubeLiveStreamInfos?.Select(x => x.ChannelName).ToList();
+			return null;
+			//return YoutubeLiveStreamInfos?.Select(x => x.ChannelName).ToList();
 		}
 		#endregion
 

@@ -371,7 +371,7 @@ namespace YoutubeLiveBrowser.ViewModels
 		{
 			var list = m_Controller.GetChannelNames();
 
-			Subscriptions = new ObservableSynchronizedCollection<string>(list);
+			Subscriptions = new ObservableSynchronizedCollection<string>(list);//todoチャンネル名の取得方法を変える
 			SelectedChannelId = list.First();
 		}
 		#endregion
@@ -385,8 +385,8 @@ namespace YoutubeLiveBrowser.ViewModels
 			var infos = await m_Controller.GetYoutubeLiveStreamInfos(false);
 			if (infos == null) { return; }
 
-			LiveChatId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.LiveChatId).First();
-			VideoId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.VideoId).First();
+			//LiveChatId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.LiveChatId).First();
+			//VideoId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.VideoId).First();
 		}
 	}
 }
