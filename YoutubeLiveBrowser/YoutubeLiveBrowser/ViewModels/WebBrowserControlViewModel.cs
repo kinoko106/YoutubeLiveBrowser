@@ -27,6 +27,7 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using System.Threading;
 using Google.Apis.Util.Store;
+using System.Configuration;
 
 namespace YoutubeLiveBrowser.ViewModels
 {
@@ -50,7 +51,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			Width = 1900;
 
 			//ChannelId = "UCD-miitqNY3nyukJ4Fnf4_A";//いいんちょ
-			ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
+			//ChannelId = "UC6oDys1BGgBsIC3WhG1BovQ";//しずりん
 			//ChannelId = "UCv1fFr156jc65EMiLbaLImw";//rikiya
 			//ChannelId = "UCsg-YqdqQ-KFF0LNk23BY4A";//でろ
 			//ChannelId = "UC48jH1ul-6HOrcSSfoR02fQ";//リリ
@@ -58,8 +59,10 @@ namespace YoutubeLiveBrowser.ViewModels
 			//ChannelId = "UCNsidkYpIAQ4QaufptQBPHQ";
 			//Comments = new ObservableSynchronizedCollection<string>();
 
+			string myChannelId = ConfigurationManager.AppSettings["MyChannelId"];
+
 			IsGetCommentEnable = false;
-			m_Controller = new YoutubeLiveController(ChannelId, inAPIKey);
+			m_Controller = new YoutubeLiveController(myChannelId, inAPIKey);
 			Comments = new ObservableSynchronizedCollection<string>();
 			BindingOperations.EnableCollectionSynchronization(Comments, new object());
 
@@ -324,7 +327,9 @@ namespace YoutubeLiveBrowser.ViewModels
 		private async Task GetYoutubeLiveStreamInfos()
 		{
 			IsProgressActive = true;
-			await m_Controller.GetYoutubeLiveStreamInfos(true);
+			//await m_Controller.GetYoutubeLiveStreamInfos(true);
+			await m_Controller.GetSubscriptionChannelsAsync();
+			await m_Controller.GetYoutubeLiveStreamInfoAsync();
 			IsProgressActive = false;
 		}
 		#endregion
@@ -376,14 +381,19 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
-		//private async Task<List<string>> GetChatIdAsync()
-		//{
-
-		//}
 		private async void SelectChannelId()
 		{
-			var infos = await m_Controller.GetYoutubeLiveStreamInfos(false);
-			if (infos == null) { return; }
+			await Task.Run(() =>
+			{
+				//SelectedChannelIdにはチャンネル名が来る
+				string channelId = m_Controller.GetChannelIdByName(SelectedChannelId);
+				var videos = m_Controller.GetVideoIds(channelId);
+				var ids = m_Controller.GetLiveChatIds(channelId);
+
+				LiveChatId = ids.Count() > 0 ? ids.First() : "";
+			});
+			//var infos = await m_Controller.GetYoutubeLiveStreamInfos(false);
+			//if (infos == null) { return; }
 
 			//LiveChatId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.LiveChatId).First();
 			//VideoId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.VideoId).First();

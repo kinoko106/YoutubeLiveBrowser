@@ -17,6 +17,17 @@ namespace YoutubeLiveBrowser.Entity
 
 		public string ChannelId { get; set; }
 		public string ChannelName { get; set; }
+
+		public override bool Equals(object obj)
+		{
+			var channel = (Channels)obj;
+			return (channel.ChannelId == ChannelId);
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 
 	#region YoutubeLiveStreamInfo
@@ -25,9 +36,14 @@ namespace YoutubeLiveBrowser.Entity
 	/// </summary>
 	public class YoutubeLiveStreamInfo
 	{
+		/// <summary>
+		/// キー項目だけ
+		/// </summary>
+		/// <param name="channelId"></param>
+		/// <param name="videoId"></param>
+		/// <param name="liveChatId"></param>
 		public YoutubeLiveStreamInfo(string channelId, 
-									string channelName,
-									string videoId, 
+									 string videoId, 
 									string liveChatId)
 		{
 			ChannelId	= channelId;
@@ -44,9 +60,9 @@ namespace YoutubeLiveBrowser.Entity
 		/// <param name="liveChatId"></param>
 		/// <param name="liveStreamStartDate"></param>
 		/// <param name="liveStreamEndDate"></param>
-		public YoutubeLiveStreamInfo(string channelId, 
-									 string videoId, 
-									 string liveChatId, 
+		public YoutubeLiveStreamInfo(string   channelId, 
+									 string   videoId, 
+									 string   liveChatId, 
 									 DateTime liveStreamStartDate, 
 									 DateTime liveStreamEndDate)
 		{
@@ -64,15 +80,14 @@ namespace YoutubeLiveBrowser.Entity
 		/// DBから読み込んだときはこっちを呼ぶ
 		/// </summary>
 		/// <param name="channelId"></param>
-		/// <param name="channelName"></param>
 		/// <param name="videoId"></param>
 		/// <param name="liveChatId"></param>
 		/// <param name="liveStreamStartDate"></param>
 		/// <param name="liveStreamEndDate"></param>
 		/// <param name="liveStreamTimeSpan"></param>
-		public YoutubeLiveStreamInfo(string channelId,  
-									 string videoId, 
-									 string liveChatId, 
+		public YoutubeLiveStreamInfo(string   channelId,  
+									 string   videoId, 
+									 string	  liveChatId, 
 									 DateTime liveStreamStartDate, 
 									 DateTime liveStreamEndDate, 
 									 TimeSpan liveStreamTimeSpan)

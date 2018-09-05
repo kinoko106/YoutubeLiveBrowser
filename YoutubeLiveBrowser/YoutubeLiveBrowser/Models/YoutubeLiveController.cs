@@ -20,7 +20,6 @@ namespace YoutubeLiveBrowser.Models
 	{
 		//apiを使って取得してきた情報を画面表示用に加工するのがこいつの仕事
 		public DataBaseAccess dataBaseAccess { get; set; }
-
 		public YoutubeApiService ApiService { get; set; }
 
 		public Dictionary<string, LiveChatMessage> LiveComments;//放送中のライブからとってきたコメント群、キーはコメントID
@@ -29,6 +28,8 @@ namespace YoutubeLiveBrowser.Models
 		
 		public List<Channels> Channels { get; set; }
 		public List<YoutubeLiveStreamInfo> YoutubeLiveStreamInfos { get; set; }
+
+		public string MyChannelId { get; set; }
 
 		#region コンストラクタ
 		/// <summary>
@@ -45,18 +46,25 @@ namespace YoutubeLiveBrowser.Models
 		/// <param name="inChannelId">チャンネルID</param>
 		public YoutubeLiveController(string inChannelId,string inAPIKey)
 		{
-			ChannelId = inChannelId;
+			//自分のチャンネルID、api使って情報取る際に使う
+			MyChannelId = inChannelId;
 
-			LiveComments = new Dictionary<string, LiveChatMessage>();
-			SubscriptionNameAndId = new Dictionary<string, string>();
-			LiveChatIds = new Dictionary<string, string>();
+			LiveComments			= new Dictionary<string, LiveChatMessage>();
+			SubscriptionNameAndId	= new Dictionary<string, string>();
+			LiveChatIds				= new Dictionary<string, string>();
 
+			//DB接続、チャンネルとか取る
 			dataBaseAccess = new DataBaseAccess();
-			var streams = dataBaseAccess.GetYoutubeLiveStreamInfo();
-			dataBaseAccess.GetYoutubeLiveComments(streams[0]);
+			var channels = dataBaseAccess.GetChannels();
+			//var streams  = dataBaseAccess.GetYoutubeLiveStreamInfo();
+			//dataBaseAccess.GetYoutubeLiveComments(streams[0]);
 
-			YoutubeLiveStreamInfos = new List<YoutubeLiveStreamInfo>();
-			ApiService = new YoutubeApiService(inAPIKey);
+			//DBから取ってきた取得済みチャンネルリスト
+			Channels = new List<Channels>();
+			Channels.AddRange(channels);
+
+			YoutubeLiveStreamInfos	= new List<YoutubeLiveStreamInfo>();
+			ApiService				= new YoutubeApiService(inAPIKey);
 		}
 		#endregion
 
@@ -133,109 +141,108 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
+		#region  GetSubscriptionAsync 登録チャンネルのリスト取得
+		/// <summary>
+		/// 登録チャンネルのリスト取得
+		/// </summary>
+		/// <param name="inChannelId">自分のチャンネルID</param>
+		/// <returns></returns>
 		public async Task<List<Subscription>> GetSubscriptionAsync(string inChannelId)
 		{
 			return await ApiService.GetSubscriptionsAsync(inChannelId);
 		}
-
-		public async Task<List<string>> GetSubscriptionIdsAsync()
-		{
-			var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");
-			return ids.Select(x => x.Snippet.ResourceId.ChannelId).ToList();
-		}
-
-		public async Task<Dictionary<string,string>> GetSubscriptionNamesAsync()
-		{
-			var ids = await GetSubscriptionAsync("UCeQEXsKfwrG91S1hGBRS-lQ");//自分のチャンネルID　configから取る
-			//var ids = await GetSubscriptionAsync("UC6lIYMjiBf9xwxTPtlvaAOw");//登録チャンネル多いサンプル
-			Dictionary<string, string> nameAndIds = new Dictionary<string, string>();
-
-			await Task.Run(() =>
-			{
-				foreach (string channelId in ids.Select(x => x.Snippet.ResourceId.ChannelId).ToList())
-				{
-					string name = ApiService.GetChannelName(channelId);
-					nameAndIds.Add(channelId, name);
-				}
-			});
-
-			return nameAndIds;
-		}
-
-		#region GetYoutubeLiveStreamInfos
+		#endregion
+		
+		#region GetSubscriptionChannels 登録しているチャンネルのリスト
 		/// <summary>
-		/// 登録しているチャンネルの情報を取得
+		/// 登録しているチャンネルのリスト
 		/// </summary>
 		/// <returns></returns>
-		public async Task<List<YoutubeLiveStreamInfo>> GetYoutubeLiveStreamInfos(bool IsRefresh)
+		public async Task GetSubscriptionChannelsAsync()
 		{
-			if (IsRefresh)
+			//var subscriptions = await GetSubscriptionAsync(MyChannelId);
+			await Task.Run(async () =>
 			{
-				var nameAndIds = await GetSubscriptionNamesAsync();
+				var subscriptions = await GetSubscriptionAsync(MyChannelId);
 
-				foreach (var pair in nameAndIds)
+				foreach (var subscription in subscriptions)
 				{
-					string channelId = pair.Key;
-					string channelName = pair.Value;
-					string videoId = await GetStreamAsync(channelId);
-					string liveChatId = await ApiService.GetChatIdAsync(videoId);
+					string channelId = subscription.Snippet.ResourceId.ChannelId;
+					string channelName = ApiService.GetChannelName(channelId);
 
-					Channels.Add(new Channels(channelId, channelName));
-					YoutubeLiveStreamInfos.Add(new YoutubeLiveStreamInfo(channelId, channelName, videoId, liveChatId));
+					Channels channel = new Channels(channelId, channelName);
+
+					if (!Channels.Contains(channel))
+					{
+						Channels.Add(channel);
+					}
 				}
-
-				return YoutubeLiveStreamInfos;
-			}
-			else
-			{
-				return YoutubeLiveStreamInfos;
-			}
+			});
 		}
 		#endregion
 
-		#region GetChannelIds
+		#region GetChannelIds チャンネルID一覧
 		/// <summary>
 		/// チャンネルID一覧
 		/// </summary>
 		/// <returns></returns>
 		public List<string> GetChannelIds()
 		{
-			return YoutubeLiveStreamInfos?.Select(x => x.ChannelId).ToList();
+			return Channels?.Select(x => x.ChannelId).ToList();
+		}
+
+		public string GetChannelIdByName(string inChannelName)
+		{
+			return Channels?.Where(x => x.ChannelName == inChannelName).Select(x => x.ChannelId).First();
 		}
 		#endregion
 
-		#region GetChannelNames
+		#region GetChannelNames チャンネル名一覧
 		/// <summary>
 		/// チャンネル名一覧
 		/// </summary>
 		/// <returns></returns>
 		public List<string> GetChannelNames()
 		{
-			return null;
-			//return YoutubeLiveStreamInfos?.Select(x => x.ChannelName).ToList();
+			return Channels?.Select(x => x.ChannelName).ToList();
 		}
 		#endregion
 
-		#region GetVideoIds
+		#region GetVideoIds 指定したチャンネルの動画リストを取得
 		/// <summary>
 		/// 動画ID一覧
+		/// 指定したチャンネルの動画リストを取得
 		/// </summary>
+		/// <param name="inChannelId">チャンネルID</param>
 		/// <returns></returns>
-		public List<string> GetVideoIds()
+		public List<string> GetVideoIds(string inChannelId)
 		{
-			return YoutubeLiveStreamInfos?.Select(x => x.VideoId).ToList();
+			return YoutubeLiveStreamInfos?.Where(x => x.ChannelId == inChannelId).Select(x => x.VideoId).ToList();
 		}
 		#endregion
 
-		#region GetLiveChatIds
-		/// <summary>
+		#region GetLiveChatIds チャットID一覧
+		/// <summary>s
 		/// チャットID一覧
 		/// </summary>
 		/// <returns></returns>
-		public List<string> GetLiveChatIds()
+		public List<string> GetLiveChatIds(string inChannelId)
 		{
-			return YoutubeLiveStreamInfos?.Select(x => x.LiveChatId).ToList();
+			return  YoutubeLiveStreamInfos?.Where(x => x.ChannelId == inChannelId).Select(x => x.LiveChatId).ToList();
 		}
 		#endregion
+
+		public async Task GetYoutubeLiveStreamInfoAsync()
+		{
+			await Task.Run(() => 
+			{
+				foreach (Channels channel in Channels)
+				{
+					var streams = dataBaseAccess.GetYoutubeLiveStreamInfo(channel);
+
+					YoutubeLiveStreamInfos.AddRange(streams);
+				}
+			});
+		}
 	}
 }
