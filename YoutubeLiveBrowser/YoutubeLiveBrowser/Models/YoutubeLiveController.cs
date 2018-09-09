@@ -232,6 +232,11 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
+		#region GetYoutubeLiveStreamInfoAsync 指定したチャンネルのStreamをDBから取得
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public async Task GetYoutubeLiveStreamInfoAsync()
 		{
 			await Task.Run(() => 
@@ -244,5 +249,6 @@ namespace YoutubeLiveBrowser.Models
 				}
 			});
 		}
+		#endregion
 	}
 }

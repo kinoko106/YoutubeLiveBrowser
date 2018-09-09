@@ -15,6 +15,9 @@ namespace YoutubeLiveBrowser.Models
 		public SqlConnection SqlConnection { get; set; }
 		public SqlTransaction SqlTransaction { get; set; }
 
+		/// <summary>
+		/// インスタンス生成時にSqlConnectionをOpen
+		/// </summary>
 		public DataBaseAccess()
 		{
 			//接続文字列の設定
@@ -28,10 +31,13 @@ namespace YoutubeLiveBrowser.Models
 			catch (Exception e)
 			{
 				string err = e.Source + " : " + e.Message;
+
+				//問題が起きたときはCloseしてDispose
+				SqlConnection.Close();
+				SqlConnection.Dispose();
 			}
 			finally
 			{
-
 			}
 		}
 

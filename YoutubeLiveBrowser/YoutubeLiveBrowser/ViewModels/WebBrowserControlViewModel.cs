@@ -202,7 +202,9 @@ namespace YoutubeLiveBrowser.ViewModels
 
 		#region IsProgressActive
 		private bool _IsProgressActive;
-
+		/// <summary>
+		/// ぐるぐるコントロールが見えるかどうか
+		/// </summary>
 		public bool IsProgressActive
 		{
 			get
@@ -220,10 +222,10 @@ namespace YoutubeLiveBrowser.ViewModels
 		//IsGetCommentEnable
 
 		#region IsGetCommentEnable
-		/// <summary>
-		/// コメント取得ボタンが有効か
-		/// </summary>
 		private bool _IsGetCommentEnable;
+		/// <summary>
+		/// GetCommentボタンの活性不活性
+		/// </summary>
 		public bool IsGetCommentEnable
 		{
 			get
@@ -257,7 +259,9 @@ namespace YoutubeLiveBrowser.ViewModels
 
 		#region Subscriptions
 		private ObservableSynchronizedCollection<string> _Subscriptions;
-
+		/// <summary>
+		/// 登録チャンネル
+		/// </summary>
 		public ObservableSynchronizedCollection<string> Subscriptions
 		{
 			get
@@ -381,22 +385,23 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region SelectChannelId 選択した
+		/// <summary>
+		/// コンボボックスで選択したチャンネルから、最新動画(放送中の動画)IDとチャットIDを取得
+		/// </summary>
 		private async void SelectChannelId()
 		{
+			string channelId = string.Empty;
 			await Task.Run(() =>
 			{
 				//SelectedChannelIdにはチャンネル名が来る
-				string channelId = m_Controller.GetChannelIdByName(SelectedChannelId);
-				var videos = m_Controller.GetVideoIds(channelId);
-				var ids = m_Controller.GetLiveChatIds(channelId);
+				channelId			= m_Controller.GetChannelIdByName(SelectedChannelId);
 
-				LiveChatId = ids.Count() > 0 ? ids.First() : "";
-			});
-			//var infos = await m_Controller.GetYoutubeLiveStreamInfos(false);
-			//if (infos == null) { return; }
+				var		videos		= m_Controller.GetVideoIds(channelId);
+				var		ids			= m_Controller.GetLiveChatIds(channelId);
 
-			//LiveChatId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.LiveChatId).First();
-			//VideoId = infos.Where(x => x.ChannelName == SelectedChannelId)?.Select(x => x.VideoId).First();
+				LiveChatId = ids.Count() > 0 ? ids.First() : "";				
+			});	
 		}
 	}
 }
