@@ -403,5 +403,6 @@ namespace YoutubeLiveBrowser.ViewModels
 				LiveChatId = ids.Count() > 0 ? ids.First() : "";				
 			});	
 		}
+		#endregion
 	}
 }
