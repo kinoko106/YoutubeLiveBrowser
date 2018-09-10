@@ -234,7 +234,7 @@ namespace YoutubeLiveBrowser.Models
 
 		#region GetYoutubeLiveStreamInfoAsync 指定したチャンネルのStreamをDBから取得
 		/// <summary>
-		/// 
+		/// DBに登録済みのチャンネルの動画情報を取得
 		/// </summary>
 		/// <returns></returns>
 		public async Task GetYoutubeLiveStreamInfoAsync()

@@ -27,21 +27,21 @@ namespace YoutubeLiveBrowser.Resources.Component
 			this.InitializeComponent();
 		}
 
-		private void ListBox_TargetUpdated(object sender, DataTransferEventArgs e)
-		{
-			(CommentList.ItemsSource as INotifyCollectionChanged).CollectionChanged += new NotifyCollectionChangedEventHandler(ListBox_CollectionChanged);
-		}
-		void ListBox_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			try
-			{
-				var comment = CommentList.Items[CommentList.Items.Count - 1];
-				CommentList.ScrollIntoView(comment);
-			}
-			catch
-			{
+		//private void ListBox_TargetUpdated(object sender, DataTransferEventArgs e)
+		//{
+		//	(CommentList.ItemsSource as INotifyCollectionChanged).CollectionChanged += new NotifyCollectionChangedEventHandler(ListBox_CollectionChanged);
+		//}
+		//void ListBox_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		//{
+		//	try
+		//	{
+		//		var comment = CommentList.Items[CommentList.Items.Count - 1];
+		//		CommentList.ScrollIntoView(comment);
+		//	}
+		//	catch
+		//	{
 
-			}
-		}
+		//	}
+		//}
 	}
 }

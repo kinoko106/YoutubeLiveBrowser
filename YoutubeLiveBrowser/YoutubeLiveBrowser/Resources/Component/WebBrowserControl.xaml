@@ -22,14 +22,15 @@
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="0,2,0,2">
                         <ComboBox x:Name="SubscriptionChannelList" Height="20" Width="250"
+                                      SelectedValue="{Binding SelectedChannelId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       ItemsSource="{Binding Subscriptions, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                                      SelectedValue="{Binding SelectedChannelId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       HorizontalAlignment="Left">
-                            <i:Interaction.Triggers>
+                            <!--<i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectionChanged">
                                     <i:InvokeCommandAction Command="{Binding SubscriptionSelectedChanged}" />
                                 </i:EventTrigger>
-                            </i:Interaction.Triggers>
+                            </i:Interaction.Triggers>-->
+                            
                         </ComboBox>
                     </StackPanel>
                 </StackPanel>
@@ -63,7 +64,6 @@
                         ItemsSource="{Binding Comments,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}" 
                          Height="265"  
                          Width="500"
-                         TargetUpdated="ListBox_TargetUpdated"
                          ></ListBox>
                 <!--<ListBox x:Name="CommentList"
                         ItemsSource="{Binding Comments,Mode=TwoWay}" 

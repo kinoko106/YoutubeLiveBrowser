@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Livet;
+using YoutubeLiveBrowser.Viewmodels;
 using YoutubeLiveBrowser.ViewModels;
 
 namespace YoutubeLiveBrowser.ViewModels
@@ -18,6 +19,8 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			Height = 600;
 			Width = 900;
+
+			SubScriptionList = new ImageListBoxViewModel();
 
 			var key = System.Configuration.ConfigurationManager.AppSettings.AllKeys;
 		}
@@ -39,5 +42,21 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region SubScriptionList
+		public ImageListBoxViewModel _SubScriptionList;
+
+		public ImageListBoxViewModel SubScriptionList
+		{
+			get
+			{ return _SubScriptionList; }
+			set
+			{
+				if (_SubScriptionList == value)
+					return;
+				_SubScriptionList = value;
+				RaisePropertyChanged(nameof(SubScriptionList));
+			}
+		}
+		#endregion
 	}
 }

@@ -172,10 +172,14 @@
     <Compile Include="Models\YoutubeApiRsponce.cs" />
     <Compile Include="Models\YoutubeLive.cs" />
     <Compile Include="Models\YoutubeLiveController.cs" />
+    <Compile Include="Resources\Component\ImageListbox.xaml.cs">
+      <DependentUpon>ImageListbox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Component\WebBrowserControl.xaml.cs">
       <DependentUpon>WebBrowserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Viewmodels\ControlViewModelBase.cs" />
+    <Compile Include="Viewmodels\ImageListBoxViewModel.cs" />
     <Compile Include="Viewmodels\MainWindowViewModel.cs" />
     <Compile Include="Viewmodels\WebBrowserControlViewModel.cs" />
     <Page Include="MainWindow.xaml">
@@ -190,6 +194,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Resources\Component\ImageListbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Component\WebBrowserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -217,7 +225,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
