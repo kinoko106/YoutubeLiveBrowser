@@ -87,6 +87,57 @@ namespace YoutubeLiveBrowser.Models
 
 			return subscriptions;
 		}
+
+		public List<Subscription> GetSubscriptions(string channelId)
+		{
+			List<Subscription> subscriptions = new List<Subscription>();
+
+			var listRequest = _Service.Subscriptions.List(YoutubeLive.YoutubePartParameters.snippet.ToString());
+			listRequest.ChannelId = channelId;
+
+			var responce = listRequest.Execute();
+			subscriptions = responce.Items.ToList();
+
+			string nextPage = responce.NextPageToken;
+			while (!string.IsNullOrEmpty(nextPage))
+			{
+				listRequest.PageToken = nextPage;
+				var res = listRequest.Execute();
+				subscriptions.AddRange(res.Items.ToList());
+				nextPage = res.NextPageToken;
+			}
+
+			return subscriptions;
+		}
+		#endregion
+
+		#region GetChannelAsync
+		/// <summary>
+		/// 指定したチャンネルIDの情報を取得
+		/// </summary>
+		/// <param name="inChannelId"></param>
+		/// <returns></returns>
+		public async Task<Channel> GetChannelAsync(string inChannelId)
+		{
+			Channel channel = new Channel();
+			var listRequest = _Service.Channels.List(YoutubeLive.YoutubePartParameters.snippet.ToString());
+			listRequest.Id = inChannelId;
+			var responce = await listRequest.ExecuteAsync();
+
+			return responce.Items.First<Channel>();
+		}
+
+		public Channel GetChannel(string inChannelId)
+		{
+			Channel channel = new Channel();
+
+			var listRequest = _Service.Channels.List(YoutubeLive.YoutubePartParameters.snippet.ToString());
+			listRequest.Id = inChannelId;
+
+			var responce = listRequest.Execute();
+
+			return responce.Items.First<Channel>();
+		}
 		#endregion
 
 		#region GetChannelName

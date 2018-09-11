@@ -14,7 +14,9 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="0,2,0,2" BorderBrush="AliceBlue" BorderThickness="1">
-                        <Image Height="150" Source="{Binding}"/>
+                        <StackPanel>
+                            <Image Height="150" Source="{Binding}"/>
+                        </StackPanel>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>

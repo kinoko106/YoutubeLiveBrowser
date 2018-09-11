@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Livet;
-using YoutubeLiveBrowser.Viewmodels;
-using YoutubeLiveBrowser.ViewModels;
 
 namespace YoutubeLiveBrowser.ViewModels
 {
@@ -21,6 +19,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			Width = 900;
 
 			SubScriptionList = new ImageListBoxViewModel();
+			PopupTab = new PopupTabViewModel(Height, Width);
 
 			var key = System.Configuration.ConfigurationManager.AppSettings.AllKeys;
 		}
@@ -55,6 +54,23 @@ namespace YoutubeLiveBrowser.ViewModels
 					return;
 				_SubScriptionList = value;
 				RaisePropertyChanged(nameof(SubScriptionList));
+			}
+		}
+		#endregion
+
+		#region PopupTab
+		public PopupTabViewModel _PopupTab;
+
+		public PopupTabViewModel PopupTab
+		{
+			get
+			{ return _PopupTab; }
+			set
+			{
+				if (_PopupTab == value)
+					return;
+				_PopupTab = value;
+				RaisePropertyChanged(nameof(PopupTab));
 			}
 		}
 		#endregion

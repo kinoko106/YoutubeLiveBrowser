@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YoutubeLiveBrowser.ViewModels;
 
-namespace YoutubeLiveBrowser.Viewmodels
+namespace YoutubeLiveBrowser.ViewModels
 {
 	class ImageListBoxViewModel : ControlViewModelBase
 	{
