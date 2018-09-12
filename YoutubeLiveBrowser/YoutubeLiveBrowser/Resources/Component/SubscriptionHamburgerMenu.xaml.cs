@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace YoutubeLiveBrowser.Resources.Component
 {
 	/// <summary>
-	/// PopupTab.xaml の相互作用ロジック
+	/// SubscriptionHamburgerMenu.xaml の相互作用ロジック
 	/// </summary>
-	public partial class PopupTab : UserControl
+	public partial class SubscriptionHamburgerMenu : UserControl
 	{
-		public PopupTab()
+		public SubscriptionHamburgerMenu()
 		{
 			InitializeComponent();
 		}

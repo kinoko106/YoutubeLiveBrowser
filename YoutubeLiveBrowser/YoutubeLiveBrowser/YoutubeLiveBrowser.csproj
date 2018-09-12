@@ -168,23 +168,20 @@
     <Compile Include="DynamicJson.cs" />
     <Compile Include="Entity\YoutubeLiveEntity.cs" />
     <Compile Include="Models\DataBaseAccess.cs" />
+    <Compile Include="Models\SubscriptionMenuModel.cs" />
     <Compile Include="Models\YoutubeApi.cs" />
     <Compile Include="Models\YoutubeApiRsponce.cs" />
     <Compile Include="Models\YoutubeLive.cs" />
     <Compile Include="Models\YoutubeLiveController.cs" />
-    <Compile Include="Resources\Component\ImageListbox.xaml.cs">
-      <DependentUpon>ImageListbox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Component\PopupTab.xaml.cs">
-      <DependentUpon>PopupTab.xaml</DependentUpon>
+    <Compile Include="Resources\Component\SubscriptionHamburgerMenu.xaml.cs">
+      <DependentUpon>SubscriptionHamburgerMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\Component\WebBrowserControl.xaml.cs">
       <DependentUpon>WebBrowserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Viewmodels\ControlViewModelBase.cs" />
-    <Compile Include="Viewmodels\ImageListBoxViewModel.cs" />
     <Compile Include="Viewmodels\MainWindowViewModel.cs" />
-    <Compile Include="Viewmodels\PopupTabViewModel.cs" />
+    <Compile Include="Viewmodels\SubscriptionHamburgerMenuViewModel.cs" />
     <Compile Include="Viewmodels\WebBrowserControlViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -198,11 +195,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Resources\Component\ImageListbox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Component\PopupTab.xaml">
+    <Page Include="Resources\Component\SubscriptionHamburgerMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

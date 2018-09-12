@@ -1,27 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using Livet;
+using YoutubeLiveBrowser.Models;
 
 namespace YoutubeLiveBrowser.ViewModels
 {
 	class MainWindowViewModel : ControlViewModelBase
 	{
+		DataBaseAccess dataBaseAccess;
+		YoutubeApiService youtubeApiService;
+
 		public MainWindowViewModel()
 		{
-			string apikey = "";
-			WebBrowser = new WebBrowserControlViewModel(apikey);
-
+			//WebBrowser = new WebBrowserControlViewModel(apikey);
+			InitializeCommonModels();
 			Height = 600;
 			Width = 900;
 
-			SubScriptionList = new ImageListBoxViewModel();
-			PopupTab = new PopupTabViewModel(Height, Width);
-
 			var key = System.Configuration.ConfigurationManager.AppSettings.AllKeys;
+		}
+
+		/// <summary>
+		/// アプリケーション内で共通のオブジェクトを初期化
+		/// </summary>
+		private void InitializeCommonModels()
+		{
+			//DB接続用オブジェクト
+			dataBaseAccess = new DataBaseAccess();
+
+			//YoutubeApi用オブジェクト
+			string ApiKey = ConfigurationManager.AppSettings["APIKey"];
+			youtubeApiService = new YoutubeApiService(ApiKey);
+
+			//コントロール用ViewModel
+			SubscriptionHamburgerMenu = new SubscriptionHamburgerMenuViewModel(Height, Width, dataBaseAccess, youtubeApiService);
 		}
 
 		#region WebBrowser
@@ -41,36 +58,19 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
-		#region SubScriptionList
-		public ImageListBoxViewModel _SubScriptionList;
+		#region SubscriptionHamburgerMenu
+		public SubscriptionHamburgerMenuViewModel _SubscriptionHamburgerMenu;
 
-		public ImageListBoxViewModel SubScriptionList
+		public SubscriptionHamburgerMenuViewModel SubscriptionHamburgerMenu
 		{
 			get
-			{ return _SubScriptionList; }
+			{ return _SubscriptionHamburgerMenu; }
 			set
 			{
-				if (_SubScriptionList == value)
+				if (_SubscriptionHamburgerMenu == value)
 					return;
-				_SubScriptionList = value;
-				RaisePropertyChanged(nameof(SubScriptionList));
-			}
-		}
-		#endregion
-
-		#region PopupTab
-		public PopupTabViewModel _PopupTab;
-
-		public PopupTabViewModel PopupTab
-		{
-			get
-			{ return _PopupTab; }
-			set
-			{
-				if (_PopupTab == value)
-					return;
-				_PopupTab = value;
-				RaisePropertyChanged(nameof(PopupTab));
+				_SubscriptionHamburgerMenu = value;
+				RaisePropertyChanged(nameof(SubscriptionHamburgerMenu));
 			}
 		}
 		#endregion

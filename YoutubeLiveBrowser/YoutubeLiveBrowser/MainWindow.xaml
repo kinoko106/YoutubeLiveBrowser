@@ -17,11 +17,8 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <Grid>
+        <component:SubscriptionHamburgerMenu HorizontalAlignment="Left" DataContext="{Binding SubscriptionHamburgerMenu}"></component:SubscriptionHamburgerMenu>
         <!--<component:WebBrowserControl DataContext="{Binding WebBrowser}" Margin="0,0,0,0"/>-->
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
-            <component:ImageListbox Height="600" Width="300" DataContext="{Binding SubScriptionList}"/>
-        </StackPanel>
-        <component:PopupTab DataContext="{Binding PopupTab}" HorizontalAlignment="Left"></component:PopupTab>
         <!--<WebBrowser Source="https://www.youtube.com/watch?v=quuZ06TLy-E;ab_channel=%E6%9C%88%E3%83%8E%E7%BE%8E%E5%85%8E"/>-->
         <!--<WebBrowser Source="C:\Users\daichiti\Source\Repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\Resources\test.html"/>-->
     </Grid>
