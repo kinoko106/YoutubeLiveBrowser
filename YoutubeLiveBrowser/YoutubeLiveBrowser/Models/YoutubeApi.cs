@@ -27,9 +27,14 @@ namespace YoutubeLiveBrowser.Models
 			CreateApiService(inApiKey);
 		}
 
+		~YoutubeApiService()
+		{
+			_Service.Dispose();
+		}
+
 		//partに複数指定する場合はカンマ区切りで文字列を連結すればok
 
-		#region CreateApiService
+		#region CreateApiService サービスの作成
 		/// <summary>
 		/// サービスの作成
 		/// </summary>
@@ -57,7 +62,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetSubscriptionsAsync
+		#region GetSubscriptionsAsync 指定したチャンネルIDが登録しているチャンネルを取得
 		/// <summary>
 		/// 指定したチャンネルIDが登録しているチャンネルを取得
 		/// </summary>
@@ -111,7 +116,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetChannelAsync
+		#region GetChannelAsync 指定したチャンネルIDの情報を取得
 		/// <summary>
 		/// 指定したチャンネルIDの情報を取得
 		/// </summary>
@@ -140,7 +145,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetChannelName
+		#region GetChannelName 指定したチャンネルIDの名前
 		/// <summary>
 		/// 指定したチャンネルIDの名前
 		/// </summary>
@@ -156,7 +161,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetChannelNameAsync
+		#region GetChannelNameAsync 指定したチャンネルIDの名前
 		/// <summary>
 		/// 指定したチャンネルIDの名前
 		/// </summary>
@@ -172,7 +177,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetChatIdAsync
+		#region GetChatIdAsync 指定したチャットIDを取得
 		/// <summary>
 		/// 指定したチャットIDを取得
 		/// </summary>
@@ -188,7 +193,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
-		#region GetChatCommentAsync
+		#region GetChatCommentAsync 指定したチャットのコメントを取得
 		/// <summary>
 		/// 指定したチャットのコメントを取得
 		/// </summary>
@@ -205,5 +210,45 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
+		/// <summary>
+		/// 指定したチャンネルの投稿動画のリスト
+		/// </summary>
+		/// <param name="inChannelId"></param>
+		/// <returns></returns>
+		public List<PlaylistItem> GetVideos(string inChannelId)
+		{
+			var listRequest = _Service.Channels.List(YoutubeLive.YoutubePartParameters.contentDetails.ToString());
+			listRequest.Id = inChannelId;
+
+			var response = listRequest.Execute();
+
+			List<PlaylistItem> playlistItem = new List<PlaylistItem>();
+			foreach(var item in response.Items)
+			{
+				string playListId = item.ContentDetails.RelatedPlaylists.Uploads;
+
+				var playlistRequest = _Service.PlaylistItems.List(YoutubeLive.YoutubePartParameters.snippet.ToString());
+				playlistRequest.PlaylistId = playListId;
+				playlistRequest.MaxResults = 50;
+
+				var playlisResponse = playlistRequest.Execute();
+
+				// 全部取る
+				string nextPage = playlisResponse.NextPageToken;
+				while (!string.IsNullOrEmpty(nextPage))
+				{
+					playlistRequest.PageToken = nextPage;
+
+					var res = playlistRequest.Execute();
+
+					playlistItem.AddRange(res.Items);
+					nextPage = res.NextPageToken;
+				}
+
+				playlistItem.AddRange(playlisResponse.Items);
+			}
+			
+			return playlistItem;
+		}
 	}
 }

@@ -18,9 +18,10 @@ namespace YoutubeLiveBrowser.ViewModels
 		public MainWindowViewModel()
 		{
 			//WebBrowser = new WebBrowserControlViewModel(apikey);
-			InitializeCommonModels();
 			Height = 600;
 			Width = 900;
+
+			InitializeCommonModels();
 
 			var key = System.Configuration.ConfigurationManager.AppSettings.AllKeys;
 		}

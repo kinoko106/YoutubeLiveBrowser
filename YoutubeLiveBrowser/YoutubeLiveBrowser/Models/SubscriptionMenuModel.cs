@@ -10,6 +10,19 @@ using System.Windows.Media.Imaging;
 
 namespace YoutubeLiveBrowser.Models
 {
+	public class VideoListItem
+	{
+		public VideoListItem(string		 title,
+							 BitmapImage image)
+		{
+			Title = title;
+			Image = image;
+		}
+
+		public string Title { get; set; }
+		public BitmapImage Image { get; set; }
+	}
+
 	class SubscriptionMenuModel
 	{
 		private DataBaseAccess m_DataBaseAccess;
@@ -104,6 +117,36 @@ namespace YoutubeLiveBrowser.Models
 			source.EndInit();
 			
 			return source;
+		}
+
+		/// <summary>
+		/// 指定したチャンネルの動画リストを作成
+		/// </summary>
+		/// <param name="inChannelId"></param>
+		/// <returns></returns>
+		public List<VideoListItem> CreateVideoListItems(string inChannelId)
+		{
+			List<VideoListItem> items = new List<VideoListItem>();
+
+			var playlistItems = m_YoutubeApiService.GetVideos(inChannelId);
+			foreach(PlaylistItem item in playlistItems)
+			{
+				string title = item.Snippet.Title;
+				string url	 = item.Snippet.Thumbnails.Medium.Url;
+
+				VideoListItem videoItem = CreateVideoListItem(title, url);
+
+				items.Add(videoItem);
+			}
+
+			return items;
+		}
+
+		private VideoListItem CreateVideoListItem(string inTitle,string inResourceURL)
+		{
+			BitmapImage image = CreateBitmapImage(inResourceURL);
+
+			return new VideoListItem(inTitle, image);
 		}
 	}
 }

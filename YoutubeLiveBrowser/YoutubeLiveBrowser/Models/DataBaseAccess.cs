@@ -41,6 +41,15 @@ namespace YoutubeLiveBrowser.Models
 			}
 		}
 
+		~DataBaseAccess()
+		{
+			if(SqlConnection != null)
+			{
+				SqlConnection.Close();
+				SqlConnection.Dispose();
+			}
+		}
+
 		#region チャンネル取得
 		/// <summary>
 		/// 登録しているチャンネルの情報

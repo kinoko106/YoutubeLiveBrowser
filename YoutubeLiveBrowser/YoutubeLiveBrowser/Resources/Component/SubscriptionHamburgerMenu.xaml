@@ -10,14 +10,49 @@
              d:DataContext="{d:DesignInstance {x:Type vm:SubscriptionHamburgerMenuViewModel},IsDesignTimeCreatable=True}"
              d:DesignHeight="{Binding Height}" d:DesignWidth="{Binding Width}">
     <Grid>
+        <ScrollViewer x:Name="VideoListPanel"
+                      HorizontalAlignment="Left"
+                      Height="{Binding VideoListPanelHeight}"
+                      Width="{Binding VideoListPanelWidth}"
+                      Margin="{Binding VideoListPanelMargin}">
+
+            <ItemsControl Width="{Binding VideoListPanelWidth}"
+                          ItemsSource="{Binding VideoListItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Mah:Tile Width="320" Height="180">
+                                <Image Source="{Binding Image}" Width="320" Height="180"/>
+                            </Mah:Tile>
+                            <TextBlock Text="{Binding Title}" 
+                                       Margin="0,0,0,3"
+                                       VerticalAlignment="Bottom"
+                                       Foreground="White"
+                                       Background="Black"
+                                       Height="30"
+                                       Width="320"
+                                       Opacity="0.7" TextDecorations="{x:Null}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
         <Mah:HamburgerMenu x:Name="SubScriptionMenu"
-                           Width="{Binding Width}" 
-                           ItemsSource="{Binding Items}"
-                           DisplayMode="CompactInline" 
-                           IsPaneOpen="{Binding IsPaneOpen,Mode=TwoWay}">
+                               HorizontalAlignment="Left"
+                               Width="{Binding SubScriptionMenuWidth}"
+                               Height="{Binding SubScriptionMenuHeight}"
+                               ItemsSource="{Binding Items}"
+                               DisplayMode="CompactInline" 
+                               IsPaneOpen="{Binding IsPaneOpen,Mode=TwoWay}">
             <Mah:HamburgerMenu.ItemTemplate>
                 <DataTemplate DataType="{x:Type Mah:HamburgerMenuImageItem}">
                     <Grid Height="48">
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="48" />
                             <ColumnDefinition Width="Auto"/>
@@ -26,7 +61,7 @@
                             <Ellipse StrokeThickness="0" Stroke="Green" Width="48" Height="48">
                                 <Ellipse.Fill>
                                     <ImageBrush
-                                        ImageSource="{Binding Thumbnail}">
+                                            ImageSource="{Binding Thumbnail}">
                                     </ImageBrush>
                                 </Ellipse.Fill>
                             </Ellipse>
