@@ -30,13 +30,14 @@ namespace YoutubeLiveBrowser.ViewModels
 			VideoListPanelWidth = 700;
 			VideoListPanelMargin = new Thickness(48, 0, 0, 0);
 
-			IsPaneOpen = false;
+			IsPaneOpen = true;
 
 			Items = new ObservableSynchronizedCollection<HamburgerMenuImageItem>();
+
 			VideoListItems = new ObservableSynchronizedCollection<VideoListItem>();
 
-			//VideoListItems.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
-			//VideoListItems.Add(AddVideoItems("item2", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\syokaku1.jpg"));
+			VideoListItems.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
+			VideoListItems.Add(AddVideoItems("item2", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\syokaku1.jpg"));
 			
 			//for (int i = 0; i < 20;i++)
 			//{

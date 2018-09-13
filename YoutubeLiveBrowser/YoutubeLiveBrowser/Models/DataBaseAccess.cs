@@ -45,8 +45,23 @@ namespace YoutubeLiveBrowser.Models
 		{
 			if(SqlConnection != null)
 			{
-				SqlConnection.Close();
-				SqlConnection.Dispose();
+				try
+				{
+					// 空いてるなら閉じる
+					if (SqlConnection.State == ConnectionState.Open)
+					{
+						//SqlConnection.Close();
+						SqlConnection.Dispose();
+					}
+				}
+				catch (SqlException e)
+				{
+					string err = e.Message;
+				}
+				catch(Exception er)
+				{
+					string err = er.Message;
+				}
 			}
 		}
 

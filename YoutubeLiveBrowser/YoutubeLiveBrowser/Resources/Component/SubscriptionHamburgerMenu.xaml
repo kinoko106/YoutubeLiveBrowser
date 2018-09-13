@@ -17,21 +17,27 @@
                       Margin="{Binding VideoListPanelMargin}">
 
             <ItemsControl Width="{Binding VideoListPanelWidth}"
-                          ItemsSource="{Binding VideoListItems}">
+                          ItemsSource="{Binding VideoListItems}"
+                          Background="DarkGray">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Mah:Tile Width="320" Height="180">
-                                <Image Source="{Binding Image}" Width="320" Height="180"/>
+                            <Mah:Tile Title="{Binding Title}" 
+                                      Width="320" 
+                                      Height="240" 
+                                      Margin="8,8,8,8"
+                                      Background="Gray"
+                                      Foreground="White">
+                                <Image VerticalAlignment="Top" Source="{Binding Image}" Width="320" Height="180"/>
                             </Mah:Tile>
-                            <TextBlock Text="{Binding Title}" 
+                            <!--<TextBlock Text="{Binding Title}" 
                                        Margin="0,0,0,3"
                                        VerticalAlignment="Bottom"
                                        Foreground="White"
                                        Background="Black"
                                        Height="30"
                                        Width="320"
-                                       Opacity="0.7" TextDecorations="{x:Null}"/>
+                                       Opacity="0.7" TextDecorations="{x:Null}"/>-->
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -51,8 +57,7 @@
                                IsPaneOpen="{Binding IsPaneOpen,Mode=TwoWay}">
             <Mah:HamburgerMenu.ItemTemplate>
                 <DataTemplate DataType="{x:Type Mah:HamburgerMenuImageItem}">
-                    <Grid Height="48">
-
+                    <Grid Height="48" Margin="0,3,0,3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="48" />
                             <ColumnDefinition Width="Auto"/>
