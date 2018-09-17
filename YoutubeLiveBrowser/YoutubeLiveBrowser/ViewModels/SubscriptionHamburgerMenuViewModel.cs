@@ -1,4 +1,5 @@
 ﻿using Livet;
+using Livet.Commands;
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
@@ -30,14 +31,14 @@ namespace YoutubeLiveBrowser.ViewModels
 			VideoListPanelWidth = 700;
 			VideoListPanelMargin = new Thickness(48, 0, 0, 0);
 
-			IsPaneOpen = true;
+			IsPaneOpen = false;
 
 			Items = new ObservableSynchronizedCollection<HamburgerMenuImageItem>();
 
 			VideoListItems = new ObservableSynchronizedCollection<VideoListItem>();
 
 			VideoListItems.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
-			VideoListItems.Add(AddVideoItems("item2", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\syokaku1.jpg"));
+			VideoListItems.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
 			
 			//for (int i = 0; i < 20;i++)
 			//{
@@ -63,35 +64,44 @@ namespace YoutubeLiveBrowser.ViewModels
 			VideoListPanelWidth		= 700;
 			VideoListPanelMargin	= new Thickness(48, 0, 0, 0);
 			IsPaneOpen = false;
-
+			IsVideoListProgressActive = false;
 			//MenuItemの生成
 			Items = new ObservableSynchronizedCollection<HamburgerMenuImageItem>();
 			BindingOperations.EnableCollectionSynchronization(Items, new object());
-
-			var items = model.CreateHamburgerMenuImageItems();
-			foreach (HamburgerMenuImageItem item in items)
-			{
-				Items.Add(item);
-			}
-			//Task.Run(async () =>
-			//{
-			//	var items = await model.CreateHamburgerMenuImageItemsAsync();
-			//	foreach (HamburgerMenuImageItem item in items)
-			//	{
-			//		Items.Add(item);
-			//	}
-			//});
+			//CreateSubscriptionMenuItemAsync();
 
 			VideoListItems = new ObservableSynchronizedCollection<VideoListItem>();
 			BindingOperations.EnableCollectionSynchronization(VideoListItems, new object());
-			var videoItems = model.CreateVideoListItems("UCD-miitqNY3nyukJ4Fnf4_A");
-			foreach (VideoListItem item in videoItems)
-			{
-				VideoListItems.Add(item);
-			}
-			//VideoListItems2.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
-			//VideoListItems2.Add(AddVideoItems("item2", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\syokaku1.jpg"));
+			//CreateVideoListAsync("UCD-miitqNY3nyukJ4Fnf4_A");
+
+			InitializeMenuItem();
 		}
+
+		#region 汎用メソッド
+		private void selectItem(object sender)
+		{
+			HamburgerMenu menu = sender as HamburgerMenu;
+
+			HamburgerMenuImageItem imageItem = (HamburgerMenuImageItem)menu.Items[menu.SelectedIndex];
+			string selectedChannelId = model.FindChannelId(imageItem.Label);
+
+			VideoListItems.Clear();
+
+			CreateVideoListAsync(selectedChannelId);
+		}
+
+		/// <summary>
+		/// 最初画面を表示する際に使用
+		/// </summary>
+		public async void InitializeMenuItem()
+		{
+			IsVideoListProgressActive = true;
+			await CreateSubscriptionMenuItemAsync();
+			CreateVideoListByNameAsync(Items.First().Label);
+			IsVideoListProgressActive = false;
+		}
+
+		#endregion
 
 		#region SubscriptionMenu用プロパティ
 		#region SubScriptionMenuWidth
@@ -145,6 +155,22 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
+		#region SubScriptionMenuItemClicked メニューアイテム選択時
+		public ListenerCommand<HamburgerMenu> _SubScriptionMenuItemClicked;
+
+		public ListenerCommand<HamburgerMenu> SubScriptionMenuItemClicked
+		{
+			get
+			{
+				if (_SubScriptionMenuItemClicked == null)
+				{
+					_SubScriptionMenuItemClicked = new ListenerCommand<HamburgerMenu>(selectItem);
+				}
+				return _SubScriptionMenuItemClicked;
+			}
+		}
+		#endregion
+
 		#region IsPaneOpen
 		private bool _IsPaneOpen = true;
 
@@ -158,6 +184,20 @@ namespace YoutubeLiveBrowser.ViewModels
 					return;
 				_IsPaneOpen = value;
 				RaisePropertyChanged(nameof(IsPaneOpen));
+			}
+		}
+		#endregion
+
+		#region CreateSubscriptionMenuItemAsync メニューアイテム作成(非同期)
+		/// <summary>
+		/// メニューアイテム作成(非同期)
+		/// </summary>
+		public async Task CreateSubscriptionMenuItemAsync()
+		{
+			var listMaterial = await model.CreateHamburgerMenuImageItemsAsync();
+			foreach (HamburgerMenuImageItem item in listMaterial)
+			{
+				Items.Add(item);
 			}
 		}
 		#endregion
@@ -248,8 +288,76 @@ namespace YoutubeLiveBrowser.ViewModels
 			}
 		}
 		#endregion
+
+		//IsVideoListProgressActive
+		private bool _IsVideoListProgressActive;
+
+		public bool IsVideoListProgressActive
+		{
+			get
+			{ return _IsVideoListProgressActive; }
+			set
+			{
+				if (_IsVideoListProgressActive == value)
+					return;
+				_IsVideoListProgressActive = value;
+				RaisePropertyChanged(nameof(IsVideoListProgressActive));
+			}
+		}
+
+		#region CreateVideoList 動画リストの要素を作成
+		private void CreateVideoList(string inChannelName)
+		{
+			VideoListItems.Clear();
+
+			var videoItems = model.CreateVideoListItems(inChannelName);
+			foreach (VideoListItem item in videoItems)
+			{
+				VideoListItems.Add(item);
+			}
+		}
 		#endregion
 
+		#region CreateVideoListAsync 動画リストの要素を作成(非同期)
+		/// <summary>
+		/// 
+		/// </summary>
+		public async void CreateVideoListAsync(string selectedChannelId)
+		{
+			IsVideoListProgressActive = true;
+			var videoItems = await model.CreateVideoListItemAsync(selectedChannelId);
+
+			foreach (VideoListItem item in videoItems)
+			{
+				VideoListItems.Add(item);
+			}
+			IsVideoListProgressActive = false;
+		}
+		#endregion
+
+		#region CreateVideoListByNameAsync 動画リストの要素をチャンネル名から作成(非同期)
+		/// <summary>
+		/// 
+		/// </summary>
+		public async void CreateVideoListByNameAsync(string inChannelId)
+		{
+			var videoItems = await model.CreateVideoListItemByNameAsync(inChannelId);
+
+			foreach (VideoListItem item in videoItems)
+			{
+				VideoListItems.Add(item);
+			}
+		}
+		#endregion
+		#endregion
+
+		#region AddVideoItems 動画リスト追加(デザイナ用)
+		/// <summary>
+		/// デザイナ用
+		/// </summary>
+		/// <param name="inTitle"></param>
+		/// <param name="inResourceURL"></param>
+		/// <returns></returns>
 		private VideoListItem AddVideoItems(string inTitle,string inResourceURL)
 		{
 			var source = new BitmapImage();
@@ -261,5 +369,6 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			return item;
 		}
+		#endregion
 	}
 }

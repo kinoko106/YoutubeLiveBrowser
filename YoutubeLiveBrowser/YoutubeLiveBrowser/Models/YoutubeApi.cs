@@ -210,6 +210,7 @@ namespace YoutubeLiveBrowser.Models
 		}
 		#endregion
 
+		#region GetVideos 指定したチャンネルの投稿動画のリスト
 		/// <summary>
 		/// 指定したチャンネルの投稿動画のリスト
 		/// </summary>
@@ -250,5 +251,49 @@ namespace YoutubeLiveBrowser.Models
 			
 			return playlistItem;
 		}
+		#endregion
+
+		#region GetVideosAsync 指定したチャンネルの投稿動画のリスト
+		/// <summary>
+		/// 指定したチャンネルの投稿動画のリスト
+		/// </summary>
+		/// <param name="inChannelId"></param>
+		/// <returns></returns>
+		public async Task<List<PlaylistItem>> GetVideosAsync(string inChannelId)
+		{
+			var listRequest = _Service.Channels.List(YoutubeLive.YoutubePartParameters.contentDetails.ToString());
+			listRequest.Id = inChannelId;
+
+			var response = await listRequest.ExecuteAsync();
+
+			List<PlaylistItem> playlistItem = new List<PlaylistItem>();
+			foreach (var item in response.Items)
+			{
+				string playListId = item.ContentDetails.RelatedPlaylists.Uploads;
+
+				var playlistRequest = _Service.PlaylistItems.List(YoutubeLive.YoutubePartParameters.snippet.ToString());
+				playlistRequest.PlaylistId = playListId;
+				playlistRequest.MaxResults = 50;
+
+				var playlisResponse = playlistRequest.Execute();
+
+				// 全部取る
+				string nextPage = playlisResponse.NextPageToken;
+				while (!string.IsNullOrEmpty(nextPage))
+				{
+					playlistRequest.PageToken = nextPage;
+
+					var res = playlistRequest.Execute();
+
+					playlistItem.AddRange(res.Items);
+					nextPage = res.NextPageToken;
+				}
+
+				playlistItem.AddRange(playlisResponse.Items);
+			}
+
+			return playlistItem;
+		}
+		#endregion
 	}
 }

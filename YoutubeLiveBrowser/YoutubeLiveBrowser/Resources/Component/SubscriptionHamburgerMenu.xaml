@@ -15,29 +15,36 @@
                       Height="{Binding VideoListPanelHeight}"
                       Width="{Binding VideoListPanelWidth}"
                       Margin="{Binding VideoListPanelMargin}">
-
             <ItemsControl Width="{Binding VideoListPanelWidth}"
                           ItemsSource="{Binding VideoListItems}"
                           Background="DarkGray">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Mah:Tile Title="{Binding Title}" 
+                            <Mah:Tile 
                                       Width="320" 
-                                      Height="240" 
+                                      Height="210" 
                                       Margin="8,8,8,8"
                                       Background="Gray"
-                                      Foreground="White">
-                                <Image VerticalAlignment="Top" Source="{Binding Image}" Width="320" Height="180"/>
+                                      Foreground="White"
+                                      >
+                                <StackPanel>
+                                    <Image VerticalAlignment="Top" 
+                                           Source="{Binding Image}" 
+                                           Width="320" 
+                                           Height="180"/>
+                                    <TextBlock Text="{Binding Title}" 
+                                           Padding="5,2,0,0"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Bottom"
+                                           Foreground="White"
+                                           Background="Black"
+                                           Height="30"
+                                           Width="320"
+                                           Opacity="0.7" TextDecorations="{x:Null}"/>
+                                </StackPanel>
                             </Mah:Tile>
-                            <!--<TextBlock Text="{Binding Title}" 
-                                       Margin="0,0,0,3"
-                                       VerticalAlignment="Bottom"
-                                       Foreground="White"
-                                       Background="Black"
-                                       Height="30"
-                                       Width="320"
-                                       Opacity="0.7" TextDecorations="{x:Null}"/>-->
+                            
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -48,13 +55,17 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </ScrollViewer>
+        <Mah:ProgressRing IsActive="{Binding IsVideoListProgressActive}"></Mah:ProgressRing>
         <Mah:HamburgerMenu x:Name="SubScriptionMenu"
-                               HorizontalAlignment="Left"
-                               Width="{Binding SubScriptionMenuWidth}"
-                               Height="{Binding SubScriptionMenuHeight}"
-                               ItemsSource="{Binding Items}"
-                               DisplayMode="CompactInline" 
-                               IsPaneOpen="{Binding IsPaneOpen,Mode=TwoWay}">
+                            HorizontalAlignment="Left"
+                            Width="{Binding SubScriptionMenuWidth}"
+                            Height="{Binding SubScriptionMenuHeight}"
+                            ItemsSource="{Binding Items}"
+                            DisplayMode="CompactInline" 
+                            ItemCommand="{Binding SubScriptionMenuItemClicked}"
+                            ItemCommandParameter="{Binding ElementName=SubScriptionMenu}"
+                            OptionsItemCommand="{Binding SubScriptionMenuItemClicked}"
+                            IsPaneOpen="{Binding IsPaneOpen,Mode=TwoWay}">
             <Mah:HamburgerMenu.ItemTemplate>
                 <DataTemplate DataType="{x:Type Mah:HamburgerMenuImageItem}">
                     <Grid Height="48" Margin="0,3,0,3">
@@ -65,9 +76,7 @@
                         <Viewbox>
                             <Ellipse StrokeThickness="0" Stroke="Green" Width="48" Height="48">
                                 <Ellipse.Fill>
-                                    <ImageBrush
-                                            ImageSource="{Binding Thumbnail}">
-                                    </ImageBrush>
+                                    <ImageBrush ImageSource="{Binding Thumbnail}" />
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Viewbox>
