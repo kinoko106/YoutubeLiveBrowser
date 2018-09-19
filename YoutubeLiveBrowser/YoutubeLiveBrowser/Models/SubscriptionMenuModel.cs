@@ -161,20 +161,36 @@ namespace YoutubeLiveBrowser.Models
 
 			// まず最初にコントロール作成用の素材を作る
 			var listMaterials = await CreateHamburgerMenuItemMaterialAsync();
-
-			foreach(var listMaterial in listMaterials)
+			//全体をUIスレッドに投げる
+			App.Current.Dispatcher.Invoke(() =>
 			{
-				string resourceUrl = listMaterial.Value;
-				// 素材のから表示するサムネイルのBitMapを作成 UIスレッドでやる
-				var bitmap = await App.Current.Dispatcher.InvokeAsync(() => CreateBitmapImage(resourceUrl));
-				// 名前、画像が揃ったらコントロールを作成 UIスレッドでやる
-				var item   = await App.Current.Dispatcher.InvokeAsync(() => CreateHamburgerMenuImageItemAsync(bitmap, listMaterial.Key));
+				foreach (var listMaterial in listMaterials)
+				{
+					string resourceUrl = listMaterial.Value;
+					// 素材のから表示するサムネイルのBitMapを作成 UIスレッドでやる
+					var bitmap = CreateBitmapImage(resourceUrl);
+					// 名前、画像が揃ったらコントロールを作成 UIスレッドでやる
+					var item = CreateHamburgerMenuImageItem(bitmap, listMaterial.Key);
 
-				items.Add(item);
-			}
+					items.Add(item);
+				}
+			});
+
+			// 旧 作成アイテム毎にUIスレッド呼んでる
+			//foreach(var listMaterial in listMaterials)
+			//{
+			//	string resourceUrl = listMaterial.Value;
+			//	// 素材のから表示するサムネイルのBitMapを作成 UIスレッドでやる
+			//	var bitmap = await App.Current.Dispatcher.InvokeAsync(() => CreateBitmapImage(resourceUrl));
+			//	// 名前、画像が揃ったらコントロールを作成 UIスレッドでやる
+			//	var item   = await App.Current.Dispatcher.InvokeAsync(() => CreateHamburgerMenuImageItemAsync(bitmap, listMaterial.Key));
+
+			//	items.Add(item);
+			//}
 
 			return items;
 		}
+		#endregion
 
 		#region CreateHamburgerMenuImageItem ハンバーガーメニューアイテムを作成
 		/// <summary>
@@ -188,23 +204,22 @@ namespace YoutubeLiveBrowser.Models
 		{
 			HamburgerMenuImageItem item = new HamburgerMenuImageItem();
 
-			item.Thumbnail  = CreateBitmapImage(inResourceURL);
+			item.Thumbnail	= CreateBitmapImage(inResourceURL);
 			item.Label		= inLabel;
 
 			return item;
 		}
 
-		private HamburgerMenuImageItem CreateHamburgerMenuImageItemAsync(BitmapImage inImage,
-																		 string inLabel)
+		private HamburgerMenuImageItem CreateHamburgerMenuImageItem(BitmapImage inImage,
+																	string inLabel)
 		{
 			HamburgerMenuImageItem item = new HamburgerMenuImageItem();
 
-			item.Thumbnail  = inImage;
+			item.Thumbnail	= inImage;
 			item.Label		= inLabel;
 
 			return item;
 		}
-		#endregion
 		#endregion
 		#endregion
 
@@ -271,25 +286,45 @@ namespace YoutubeLiveBrowser.Models
 			string id = FindChannelId(inChannelName);
 			var items = await CreateVideoListItemsAsync(id);
 
-			foreach(VideoListItem item in items)
+			foreach (VideoListItem item in items)
 			{
 				string imageUrl = item.BitmapImageURL;
-				item.Image = await App.Current.Dispatcher.InvokeAsync(() => CreateBitmapImage(imageUrl));
+				item.Image = CreateBitmapImage(imageUrl);
 			}
+
+			//bitmapの作成はやっぱりUIスレッドで作る
+			App.Current.Dispatcher.Invoke(() =>
+			{
+				foreach (VideoListItem item in items)
+				{
+					string imageUrl = item.BitmapImageURL;
+					item.Image = CreateBitmapImage(imageUrl);
+				}
+			});
 
 			return items;
 		}
 		#endregion
 
+		#region CreateVideoListItemAsync チャンネルIDから
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="inChannelId"></param>
+		/// <returns></returns>
 		public async Task<List<VideoListItem>> CreateVideoListItemAsync(string inChannelId)
 		{
 			var items = await CreateVideoListItemsAsync(inChannelId);
 
-			foreach (VideoListItem item in items)
+			// UIスレッドに投げる
+			App.Current.Dispatcher.Invoke(() =>
 			{
-				string imageUrl = item.BitmapImageURL;
-				item.Image = await App.Current.Dispatcher.InvokeAsync(() => CreateBitmapImage(imageUrl));
-			}
+				foreach (VideoListItem item in items)
+				{
+					string imageUrl = item.BitmapImageURL;
+					item.Image = CreateBitmapImage(imageUrl);
+				}
+			});
 
 			return items;
 		}

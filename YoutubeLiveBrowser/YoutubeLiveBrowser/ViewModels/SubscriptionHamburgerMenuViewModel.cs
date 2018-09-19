@@ -87,9 +87,16 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			VideoListItems.Clear();
 
-			CreateVideoListAsync(selectedChannelId);
+			
+			Task.Run(async () => 
+			{
+				IsVideoListProgressActive = true;
+				await CreateVideoListAsync(selectedChannelId);
+				IsVideoListProgressActive = false;
+			});
 		}
 
+		#region InitializeMenuItem 最初画面を表示する際に使用
 		/// <summary>
 		/// 最初画面を表示する際に使用
 		/// </summary>
@@ -100,7 +107,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			CreateVideoListByNameAsync(Items.First().Label);
 			IsVideoListProgressActive = false;
 		}
-
+		#endregion
 		#endregion
 
 		#region SubscriptionMenu用プロパティ
@@ -255,7 +262,7 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
-		#region VideoListItems
+		#region VideoListItems Tile版 未使用
 		//private ObservableSynchronizedCollection<Tile> _VideoListItems;
 
 		//public ObservableSynchronizedCollection<Tile> VideoListItems
@@ -289,7 +296,7 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
-		//IsVideoListProgressActive
+		#region IsVideoListProgressActive
 		private bool _IsVideoListProgressActive;
 
 		public bool IsVideoListProgressActive
@@ -304,6 +311,7 @@ namespace YoutubeLiveBrowser.ViewModels
 				RaisePropertyChanged(nameof(IsVideoListProgressActive));
 			}
 		}
+		#endregion
 
 		#region CreateVideoList 動画リストの要素を作成
 		private void CreateVideoList(string inChannelName)
@@ -322,16 +330,19 @@ namespace YoutubeLiveBrowser.ViewModels
 		/// <summary>
 		/// 
 		/// </summary>
-		public async void CreateVideoListAsync(string selectedChannelId)
+		public async Task CreateVideoListAsync(string selectedChannelId)
 		{
-			IsVideoListProgressActive = true;
+			// UI作成用の情報をAPIを使用して集める
 			var videoItems = await model.CreateVideoListItemAsync(selectedChannelId);
 
-			foreach (VideoListItem item in videoItems)
+			// UI作成はまとめてUIスレッドに投げる
+			App.Current.Dispatcher.Invoke(() =>
 			{
-				VideoListItems.Add(item);
-			}
-			IsVideoListProgressActive = false;
+				foreach (VideoListItem item in videoItems)
+				{
+					VideoListItems.Add(item);
+				}
+			});
 		}
 		#endregion
 
