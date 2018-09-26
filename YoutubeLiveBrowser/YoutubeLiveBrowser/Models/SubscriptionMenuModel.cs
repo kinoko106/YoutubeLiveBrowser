@@ -1,4 +1,5 @@
 ﻿using Google.Apis.YouTube.v3.Data;
+using Livet.Commands;
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
@@ -6,11 +7,16 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using YoutubeLiveBrowser.Entity;
+using YoutubeLiveBrowser.ViewModels;
 
 namespace YoutubeLiveBrowser.Models
 {
+	//viewmodel化する
+	//SubscriptionHamburgerMenuViewModelでインスタンス作成して、親オブジェクトとして登録、
+	//さらに子オブジェクトとしてVideoInfoを登録し、IsOpenを操作できるように変更
 	public class VideoListItem
 	{
 		public VideoListItem(string		 title,
@@ -26,6 +32,7 @@ namespace YoutubeLiveBrowser.Models
 		{
 			Title = title;
 			BitmapImageURL = bitmapImageURL;
+			TileCommand = new ViewModelCommand(Clicked);
 		}
 
 		public string		Title			{ get; set; }
@@ -36,6 +43,16 @@ namespace YoutubeLiveBrowser.Models
 		public int			ImageHeight	{ get; set; }
 		public int			TextWidth	{ get; set; }
 		public int			TextHeight	{ get; set; }
+		
+		public ViewModelCommand TileCommand { get; set; }//ボタンに個別のイベントを設定したい
+
+		private void Clicked()
+		{
+			
+		}
+
+		private VideoInfoViewModel VideoInfoViewModel { get; set; }
+
 	}
 
 	class SubscriptionMenuModel
@@ -47,7 +64,9 @@ namespace YoutubeLiveBrowser.Models
 
 		public SubscriptionMenuModel()
 		{
-
+			m_DataBaseAccess = null;
+			m_YoutubeApiService = null;
+			m_Channels = new List<Channels>();
 		}
 
 		public SubscriptionMenuModel(DataBaseAccess inDataBaseAccess, YoutubeApiService inYoutubeApiService)
@@ -267,7 +286,8 @@ namespace YoutubeLiveBrowser.Models
 				string url   = item.Snippet.Thumbnails.Medium.Url;
 
 				VideoListItem videoItem = new VideoListItem(title, url);
-
+				//videoItem.TileCommand = new ListenerCommand<VideoListItem>(SelectVideoItem);
+				//videoItem.TileCommand = new ViewModelCommand(SelectVideoItem);
 				items.Add(videoItem);
 			}
 
@@ -336,6 +356,8 @@ namespace YoutubeLiveBrowser.Models
 
 			return new VideoListItem(inTitle, image);
 		}
+		#endregion
+
 		#endregion
 	}
 }

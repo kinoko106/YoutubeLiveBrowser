@@ -176,12 +176,16 @@
     <Compile Include="Resources\Component\SubscriptionHamburgerMenu.xaml.cs">
       <DependentUpon>SubscriptionHamburgerMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\Component\VideoInfo.xaml.cs">
+      <DependentUpon>VideoInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Component\WebBrowserControl.xaml.cs">
       <DependentUpon>WebBrowserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Viewmodels\ControlViewModelBase.cs" />
     <Compile Include="Viewmodels\MainWindowViewModel.cs" />
     <Compile Include="Viewmodels\SubscriptionHamburgerMenuViewModel.cs" />
+    <Compile Include="Viewmodels\VideoInfoViewModel.cs" />
     <Compile Include="Viewmodels\WebBrowserControlViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -196,6 +200,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Resources\Component\SubscriptionHamburgerMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Component\VideoInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

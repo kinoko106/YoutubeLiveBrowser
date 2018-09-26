@@ -22,8 +22,6 @@ namespace YoutubeLiveBrowser.ViewModels
 			Width = 900;
 
 			InitializeCommonModels();
-
-			var key = System.Configuration.ConfigurationManager.AppSettings.AllKeys;
 		}
 
 		/// <summary>

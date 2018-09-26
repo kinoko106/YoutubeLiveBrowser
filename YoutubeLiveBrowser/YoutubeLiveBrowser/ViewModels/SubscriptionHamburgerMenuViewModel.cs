@@ -3,6 +3,7 @@ using Livet.Commands;
 using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,14 +18,17 @@ namespace YoutubeLiveBrowser.ViewModels
 	class SubscriptionHamburgerMenuViewModel : ControlViewModelBase
 	{
 		SubscriptionMenuModel model;
+		VideoInfoViewModel VideoInfo;
 
 		/// <summary>
 		/// デザイナ用引数なしコンストラクタ
 		/// </summary>
 		public SubscriptionHamburgerMenuViewModel()
 		{
+			model = new SubscriptionMenuModel();
+			//コントロールの初期化
 			Height = 580;//windowタイトルを除いた高さ
-			Width  = 900;
+			Width = 900;
 			SubScriptionMenuHeight = Height;
 			SubScriptionMenuWidth = 280;
 			VideoListPanelHeight = Height;
@@ -39,7 +43,9 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			VideoListItems.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
 			VideoListItems.Add(AddVideoItems("item1", @"C:\Users\03dai\source\repos\YoutubeLiveBrowser\YoutubeLiveBrowser\YoutubeLiveBrowser\bin\Debug\zui.jpg"));
-			
+
+
+			VideoInfo = new VideoInfoViewModel();
 			//for (int i = 0; i < 20;i++)
 			//{
 			//	VideoListItems2.Add(AddVideoItems());
@@ -49,35 +55,42 @@ namespace YoutubeLiveBrowser.ViewModels
 
 		public SubscriptionHamburgerMenuViewModel(int MainwindowHeight,
 												  int MainwinndowWidth,
-												  DataBaseAccess	inDataBaseAccess,
+												  DataBaseAccess inDataBaseAccess,
 												  YoutubeApiService inYoutubeApiService)
 			: base(inDataBaseAccess, inYoutubeApiService)
 		{
 			model = new SubscriptionMenuModel(inDataBaseAccess, inYoutubeApiService); ;
 
 			//コントロールの初期化
-			Height					= MainwindowHeight - 20;
-			Width					= MainwinndowWidth;
-			SubScriptionMenuHeight	= Height;
-			SubScriptionMenuWidth	= 280;
-			VideoListPanelHeight	= Height;
-			VideoListPanelWidth		= 700;
-			VideoListPanelMargin	= new Thickness(48, 0, 0, 0);
+			Height = MainwindowHeight - 20;
+			Width = MainwinndowWidth;
+			SubScriptionMenuHeight = Height;
+			SubScriptionMenuWidth = 280;
+			VideoListPanelHeight = Height;
+			VideoListPanelWidth = 700;
+			VideoListPanelMargin = new Thickness(48, 0, 0, 0);
 			IsPaneOpen = false;
 			IsVideoListProgressActive = false;
 			//MenuItemの生成
 			Items = new ObservableSynchronizedCollection<HamburgerMenuImageItem>();
 			BindingOperations.EnableCollectionSynchronization(Items, new object());
-			//CreateSubscriptionMenuItemAsync();
 
 			VideoListItems = new ObservableSynchronizedCollection<VideoListItem>();
 			BindingOperations.EnableCollectionSynchronization(VideoListItems, new object());
-			//CreateVideoListAsync("UCD-miitqNY3nyukJ4Fnf4_A");
 
+			//動画情報のウィンドウ
+			VideoInfo = new VideoInfoViewModel();
+			VideoInfo.IsOpen = true;
 			InitializeMenuItem();
 		}
 
 		#region 汎用メソッド
+
+		#region selectItem メニュー選択時メソッド
+		/// <summary>
+		/// メニュー選択時メソッド
+		/// </summary>
+		/// <param name="sender"></param>
 		private void selectItem(object sender)
 		{
 			HamburgerMenu menu = sender as HamburgerMenu;
@@ -87,14 +100,15 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			VideoListItems.Clear();
 
-			
-			Task.Run(async () => 
+
+			Task.Run(async () =>
 			{
 				IsVideoListProgressActive = true;
 				await CreateVideoListAsync(selectedChannelId);
 				IsVideoListProgressActive = false;
 			});
 		}
+		#endregion
 
 		#region InitializeMenuItem 最初画面を表示する際に使用
 		/// <summary>
@@ -262,23 +276,6 @@ namespace YoutubeLiveBrowser.ViewModels
 		}
 		#endregion
 
-		#region VideoListItems Tile版 未使用
-		//private ObservableSynchronizedCollection<Tile> _VideoListItems;
-
-		//public ObservableSynchronizedCollection<Tile> VideoListItems
-		//{
-		//	get
-		//	{ return _VideoListItems; }
-		//	set
-		//	{
-		//		if (_VideoListItems == value)
-		//			return;
-		//		_VideoListItems = value;
-		//		RaisePropertyChanged(nameof(VideoListItems));
-		//	}
-		//}
-		#endregion
-
 		#region VideoListItems
 		private ObservableSynchronizedCollection<VideoListItem> _VideoListItems;
 
@@ -340,6 +337,7 @@ namespace YoutubeLiveBrowser.ViewModels
 			{
 				foreach (VideoListItem item in videoItems)
 				{
+
 					VideoListItems.Add(item);
 				}
 			});
@@ -369,7 +367,7 @@ namespace YoutubeLiveBrowser.ViewModels
 		/// <param name="inTitle"></param>
 		/// <param name="inResourceURL"></param>
 		/// <returns></returns>
-		private VideoListItem AddVideoItems(string inTitle,string inResourceURL)
+		private VideoListItem AddVideoItems(string inTitle, string inResourceURL)
 		{
 			var source = new BitmapImage();
 			source.BeginInit();
@@ -381,5 +379,18 @@ namespace YoutubeLiveBrowser.ViewModels
 			return item;
 		}
 		#endregion
+
+		public ViewModelCommand _OpenFlyOut;
+		public ViewModelCommand OpenFlyOut
+		{
+			get
+			{
+				if(_OpenFlyOut == null)
+				{
+					_OpenFlyOut = new ViewModelCommand(() => { VideoInfo.IsOpen = true; });
+				}
+				return _OpenFlyOut;
+			}
+		}
 	}
 }

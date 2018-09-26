@@ -15,18 +15,21 @@
                       Height="{Binding VideoListPanelHeight}"
                       Width="{Binding VideoListPanelWidth}"
                       Margin="{Binding VideoListPanelMargin}">
-            <ItemsControl Width="{Binding VideoListPanelWidth}"
+            <ItemsControl x:Name="VideoList"
+                          Width="{Binding VideoListPanelWidth}"
                           ItemsSource="{Binding VideoListItems}"
                           Background="DarkGray">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Mah:Tile 
+                            <Mah:Tile x:Name="VideoItem"
                                       Width="320" 
                                       Height="210" 
                                       Margin="8,8,8,8"
                                       Background="Gray"
                                       Foreground="White"
+                                      Command="{Binding TileCommand}"
+                                      CommandParameter="{Binding ElementName=VideoListItems}"
                                       >
                                 <StackPanel>
                                     <Image VerticalAlignment="Top" 
@@ -41,10 +44,9 @@
                                            Background="Black"
                                            Height="30"
                                            Width="320"
-                                           Opacity="0.7" TextDecorations="{x:Null}"/>
+                                           Opacity="0.7"/>
                                 </StackPanel>
                             </Mah:Tile>
-                            
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -85,5 +87,7 @@
                 </DataTemplate>
             </Mah:HamburgerMenu.ItemTemplate>
         </Mah:HamburgerMenu>
+        <Button Width="80" Height="20" HorizontalAlignment="Right" Content="Open" Command="{Binding OpenFlyOut}"></Button>
+        <local:VideoInfo DataContext="{Binding VideoInfo}"></local:VideoInfo>
     </Grid>
 </UserControl>

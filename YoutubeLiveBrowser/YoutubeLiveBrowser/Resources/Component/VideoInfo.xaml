@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="YoutubeLiveBrowser.Resources.Component.VideoInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YoutubeLiveBrowser.Resources.Component"
+             xmlns:vm="clr-namespace:YoutubeLiveBrowser.ViewModels"
+             xmlns:Mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance {x:Type vm:VideoInfoViewModel},IsDesignTimeCreatable=True}"
+             d:DesignHeight="{Binding Height}" d:DesignWidth="{Binding Width}">
+    <Mah:Flyout Width="{Binding Width}"
+                Height="{Binding Height}"
+                Header="{Binding Header}"
+                IsOpen="{Binding IsOpen,Mode=TwoWay}"
+                CloseCommand="{Binding CloseButtonClicked}"
+                Position="Right"
+                Theme="Dark" 
+                IsPinned="False"
+                Visibility="Visible">
+        <Mah:FlyoutsControl>
+            <StackPanel x:Name="ThumbnailPanel"
+                    Orientation="Horizontal">
+                <Image Source="{Binding Image}"
+                    Width="320" 
+                    Height="180"></Image>
+            </StackPanel>
+            <StackPanel x:Name="VideoInfoPanel">
+
+            </StackPanel>
+        </Mah:FlyoutsControl>
+    </Mah:Flyout>
+</UserControl>
