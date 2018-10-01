@@ -18,7 +18,7 @@ namespace YoutubeLiveBrowser.ViewModels
 	class SubscriptionHamburgerMenuViewModel : ControlViewModelBase
 	{
 		SubscriptionMenuModel model;
-		VideoInfoViewModel VideoInfo;
+		//VideoInfoViewModel VideoInfo;
 
 		/// <summary>
 		/// デザイナ用引数なしコンストラクタ
@@ -80,8 +80,9 @@ namespace YoutubeLiveBrowser.ViewModels
 
 			//動画情報のウィンドウ
 			VideoInfo = new VideoInfoViewModel();
-			VideoInfo.IsOpen = true;
 			InitializeMenuItem();
+
+			VideoItem = new VideoItemViewModel();
 		}
 
 		#region 汎用メソッド
@@ -360,6 +361,27 @@ namespace YoutubeLiveBrowser.ViewModels
 		#endregion
 		#endregion
 
+		#region VideoInfo用プロパティ
+
+		#region VideoInfo
+		private VideoInfoViewModel _VideoInfo;
+
+		public VideoInfoViewModel VideoInfo
+		{
+			get
+			{ return _VideoInfo; }
+			set
+			{
+				if (_VideoInfo == value)
+					return;
+				_VideoInfo = value;
+				RaisePropertyChanged(nameof(VideoInfo));
+			}
+		}
+		#endregion
+
+		#endregion
+
 		#region AddVideoItems 動画リスト追加(デザイナ用)
 		/// <summary>
 		/// デザイナ用
@@ -392,5 +414,23 @@ namespace YoutubeLiveBrowser.ViewModels
 				return _OpenFlyOut;
 			}
 		}
+
+
+		#region VideoItem
+		private VideoItemViewModel _VideoItem;
+
+		public VideoItemViewModel VideoItem
+		{
+			get
+			{ return _VideoItem; }
+			set
+			{
+				if (_VideoItem == value)
+					return;
+				_VideoItem = value;
+				RaisePropertyChanged(nameof(VideoItem));
+			}
+		}
+		#endregion
 	}
 }

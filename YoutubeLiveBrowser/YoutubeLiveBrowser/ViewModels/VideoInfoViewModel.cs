@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace YoutubeLiveBrowser.ViewModels
@@ -12,11 +13,31 @@ namespace YoutubeLiveBrowser.ViewModels
 	{
 		public VideoInfoViewModel()
 		{
-			Width  = 900;
+			//左のハンバーガーメニュー分の幅をずらして表示
+			Width  = 900 - 48;
 			Height = 580;
+			Margin = new Thickness(48, 0, 0, 0);
 			Header = "Video Title";
-			IsOpen = false;
+			IsOpen = true;
+			//IsOpen = false;
 		}
+
+		#region Margin
+		private Thickness _Margin;
+
+		public Thickness Margin
+		{
+			get
+			{ return _Margin; }
+			set
+			{
+				if (_Margin == value)
+					return;
+				_Margin = value;
+				RaisePropertyChanged(nameof(Margin));
+			}
+		}
+		#endregion
 
 		#region Header
 		private string _Header;
@@ -87,7 +108,6 @@ namespace YoutubeLiveBrowser.ViewModels
 
 		private void ChangeOpenState()
 		{
-			//バインドできていない
 			IsOpen = false;
 		}
 	}

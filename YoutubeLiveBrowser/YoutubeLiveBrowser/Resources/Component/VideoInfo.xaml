@@ -14,6 +14,7 @@
                 Header="{Binding Header}"
                 IsOpen="{Binding IsOpen,Mode=TwoWay}"
                 CloseCommand="{Binding CloseButtonClicked}"
+                Margin="{Binding Margin}"
                 Position="Right"
                 Theme="Dark" 
                 IsPinned="False"

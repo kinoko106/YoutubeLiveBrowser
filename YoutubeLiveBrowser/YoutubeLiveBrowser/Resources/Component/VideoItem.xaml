@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="YoutubeLiveBrowser.Resources.Component.VideoItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:YoutubeLiveBrowser.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+             xmlns:Mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:local="clr-namespace:YoutubeLiveBrowser.Resources.Component"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance {x:Type vm:VideoItemViewModel},IsDesignTimeCreatable=True}"
+             d:DesignHeight="160" d:DesignWidth="200">
+    <StackPanel>
+        <TextBox Height="80" Text="{Binding Text,Mode=TwoWay}">
+            
+        </TextBox>
+        <Button Height="80" Content="button" Command="{Binding ChangeText}">
+
+        </Button>
+    </StackPanel>
+</UserControl>

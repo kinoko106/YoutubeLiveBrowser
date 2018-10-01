@@ -32,10 +32,12 @@
                                       CommandParameter="{Binding ElementName=VideoListItems}"
                                       >
                                 <StackPanel>
-                                    <Image VerticalAlignment="Top" 
-                                           Source="{Binding Image}" 
-                                           Width="320" 
-                                           Height="180"/>
+                                    <Viewbox>
+                                        <Image VerticalAlignment="Top" 
+                                               Source="{Binding Image}" 
+                                               Width="320" 
+                                               Height="180"/>
+                                    </Viewbox>
                                     <TextBlock Text="{Binding Title}" 
                                            Padding="5,2,0,0"
                                            TextWrapping="Wrap"
@@ -87,7 +89,8 @@
                 </DataTemplate>
             </Mah:HamburgerMenu.ItemTemplate>
         </Mah:HamburgerMenu>
-        <Button Width="80" Height="20" HorizontalAlignment="Right" Content="Open" Command="{Binding OpenFlyOut}"></Button>
-        <local:VideoInfo DataContext="{Binding VideoInfo}"></local:VideoInfo>
+        <Button Width="80" Height="20"  HorizontalAlignment="Right" Content="Open" Command="{Binding OpenFlyOut}"></Button>
+        <local:VideoItem HorizontalAlignment="Right" Margin="0,300,0,0" Height="160" DataContext="{Binding VideoItem}"/>
+        <!--<local:VideoInfo DataContext="{Binding VideoInfo}"></local:VideoInfo>-->
     </Grid>
 </UserControl>

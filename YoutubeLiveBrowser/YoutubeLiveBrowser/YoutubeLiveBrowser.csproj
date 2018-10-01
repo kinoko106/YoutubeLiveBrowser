@@ -169,6 +169,8 @@
     <Compile Include="Entity\YoutubeLiveEntity.cs" />
     <Compile Include="Models\DataBaseAccess.cs" />
     <Compile Include="Models\SubscriptionMenuModel.cs" />
+    <Compile Include="Models\VideoInfoModel.cs" />
+    <Compile Include="Models\VideoItemModel.cs" />
     <Compile Include="Models\YoutubeApi.cs" />
     <Compile Include="Models\YoutubeApiRsponce.cs" />
     <Compile Include="Models\YoutubeLive.cs" />
@@ -179,6 +181,9 @@
     <Compile Include="Resources\Component\VideoInfo.xaml.cs">
       <DependentUpon>VideoInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\Component\VideoItem.xaml.cs">
+      <DependentUpon>VideoItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Component\WebBrowserControl.xaml.cs">
       <DependentUpon>WebBrowserControl.xaml</DependentUpon>
     </Compile>
@@ -186,6 +191,7 @@
     <Compile Include="Viewmodels\MainWindowViewModel.cs" />
     <Compile Include="Viewmodels\SubscriptionHamburgerMenuViewModel.cs" />
     <Compile Include="Viewmodels\VideoInfoViewModel.cs" />
+    <Compile Include="Viewmodels\VideoItemViewModel.cs" />
     <Compile Include="Viewmodels\WebBrowserControlViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -204,6 +210,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Component\VideoInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Component\VideoItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
