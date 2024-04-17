@@ -23,7 +23,7 @@ namespace YoutubeLiveBrowser.Models
 			//接続文字列の設定
 			SqlConnection = new SqlConnection();
 			SqlConnection.ConnectionString = ConfigurationManager.AppSettings["ConnectionString"];
-			
+			// test
 			try
 			{
 				SqlConnection.Open();
